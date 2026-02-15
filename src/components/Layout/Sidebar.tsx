@@ -23,12 +23,40 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ view, setView, handleLogout }) => {
+  const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+
   return (
-    <aside className="w-64 bg-white dark:bg-slate-900 border-r dark:border-slate-800 flex flex-col fixed h-full z-20 hidden md:flex">
-      <div className="p-6 flex items-center gap-3">
-        <ShieldCheck className="text-blue-600" size={28} />
-        <span className="text-xl font-black dark:text-white tracking-tight">PayLockr</span>
-      </div>
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+        className="md:hidden fixed top-4 left-4 z-50 p-2.5 bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-800 rounded-lg shadow-lg"
+      >
+        <svg className="w-6 h-6 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {isMobileOpen ? (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          )}
+        </svg>
+      </button>
+
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-30"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 flex flex-col fixed h-full z-40 transition-transform duration-300 ${
+        isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      }`}>
+        <div className="p-6 flex items-center gap-3 border-b border-gray-200 dark:border-slate-800">
+          <ShieldCheck className="text-blue-600" size={28} />
+          <span className="text-xl font-black text-gray-900 dark:text-white tracking-tight">PayLockr</span>
+        </div>
       
       <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
         {[
@@ -46,11 +74,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ view, setView, handleLogout })
         ].map(item => (
           <button
             key={item.id}
-            onClick={() => setView(item.id as ViewState)}
+            onClick={() => {
+              setView(item.id as ViewState);
+              setIsMobileOpen(false);
+            }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
               view === item.id 
                 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' 
-                : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-slate-400'
+                : 'text-gray-600 hover:bg-gray-50 dark:text-slate-400 dark:hover:bg-slate-800'
             }`}
           >
             <item.icon size={20} />
@@ -59,11 +90,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ view, setView, handleLogout })
         ))}
       </nav>
 
-      <div className="p-4 border-t dark:border-slate-800">
+      <div className="p-4 border-t border-gray-200 dark:border-slate-800">
         <button onClick={handleLogout} className="flex items-center gap-3 text-red-500 px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg w-full transition-colors">
           <LogOut size={20} /> Logout
         </button>
       </div>
     </aside>
+    </>
   );
 };

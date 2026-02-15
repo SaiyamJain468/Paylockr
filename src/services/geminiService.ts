@@ -1,13 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
-import { Transaction } from "../src/types";
+import { Transaction } from "../types";
 
 // Helper to get AI instance safely for Vite/Browser environment
 const getAiInstance = () => {
-  // Check import.meta.env first (Vite standard), fall back to empty string
-  const apiKey = (import.meta as any).env.VITE_API_KEY || (import.meta as any).env.API_KEY || '';
+  // Check import.meta.env first (Vite standard)
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
   
-  if (!apiKey) {
-    throw new Error("API Key missing. Please add VITE_API_KEY to your environment variables.");
+  if (!apiKey || apiKey.trim() === '') {
+    throw new Error("API Key missing. Please add VITE_GEMINI_API_KEY to your .env.local file in the project root.");
   }
   return new GoogleGenAI({ apiKey });
 };

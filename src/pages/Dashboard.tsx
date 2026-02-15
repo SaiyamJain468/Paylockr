@@ -103,24 +103,24 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <>
-      <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border-b sticky top-0 z-20`}>
+      <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border-b sticky top-0 z-20 shadow-sm`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            <div className="flex-1 min-w-0">
+              <h1 className={`text-xl md:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} truncate`}>
                 {currentUser ? `Welcome back, ${currentUser.name ? currentUser.name.split(' ')[0] : 'Freelancer'}! 👋` : 'Dashboard'}
               </h1>
               <div className="flex items-center gap-2 mt-1">
-                <span className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+                <span className={`text-xs md:text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
                   Tax Health:
                 </span>
-                <span className={`text-sm font-semibold ${taxHealth.color}`}>
+                <span className={`text-xs md:text-sm font-semibold ${taxHealth.color}`}>
                   {taxHealth.icon} {taxHealth.status}
                 </span>
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               <div className="relative" ref={notificationRef}>
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
@@ -128,18 +128,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-gray-100'
                   } transition-colors`}
                 >
-                  <Bell className={`w-6 h-6 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`} />
+                  <Bell className={`w-5 h-5 md:w-6 md:h-6 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`} />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    <span className="absolute top-0 right-0 w-4 h-4 md:w-5 md:h-5 bg-red-500 text-white text-[10px] md:text-xs font-bold rounded-full flex items-center justify-center">
                       {unreadCount}
                     </span>
                   )}
                 </button>
 
                 {showNotifications && (
-                  <div className={`absolute right-0 mt-2 w-96 ${
+                  <div className={`absolute right-0 mt-2 w-[calc(100vw-2rem)] md:w-96 ${
                     isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'
-                  } border rounded-lg shadow-xl max-h-[32rem] overflow-hidden flex flex-col z-50`}>
+                  } border-2 rounded-xl shadow-2xl max-h-[32rem] overflow-hidden flex flex-col z-50`}>
                     <div className={`p-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>
                       <div className="flex items-center justify-between">
                         <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -212,21 +212,21 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
               <button
                 onClick={() => setCurrentView('HELP')}
-                className={`px-4 py-2 rounded-lg font-medium ${
+                className={`p-2 md:px-4 md:py-2 rounded-lg font-medium ${
                   isDarkMode 
                     ? 'bg-slate-700 hover:bg-slate-600 text-white' 
                     : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                 } transition-colors flex items-center gap-2`}
               >
                 <HelpCircle className="w-5 h-5" />
-                <span className="hidden sm:inline">Help</span>
+                <span className="hidden md:inline">Help</span>
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         <Stats 
           totalIncome={totalIncome} 
           estimatedTax={estimatedTax} 
@@ -236,26 +236,26 @@ export const Dashboard: React.FC<DashboardProps> = ({
         />
 
         {nextDeadline && (
-          <div className={`mb-8 p-6 rounded-xl border-2 ${isDarkMode ? 'bg-amber-500/5 border-amber-500/20' : 'bg-amber-50 border-amber-200'}`}>
-            <div className="flex items-start gap-4">
+          <div className={`mb-6 md:mb-8 p-4 md:p-6 rounded-xl border-2 ${isDarkMode ? 'bg-amber-500/5 border-amber-500/20' : 'bg-amber-50 border-amber-200'}`}>
+            <div className="flex flex-col md:flex-row items-start gap-4">
               <div className={`w-12 h-12 rounded-lg ${isDarkMode ? 'bg-amber-500/10' : 'bg-amber-100'} flex items-center justify-center flex-shrink-0`}>
                 <Calendar className={`w-6 h-6 ${isDarkMode ? 'text-amber-400' : 'text-amber-600'}`} />
               </div>
               <div className="flex-1">
-                <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-1`}>
+                <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-1 text-sm md:text-base`}>
                   Next Tax Deadline: {nextDeadline.quarter} Advance Tax
                 </h3>
-                <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'} mb-3`}>
+                <p className={`text-xs md:text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'} mb-3`}>
                   Due on {new Date(nextDeadline.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-4">
                   <div>
                     <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-500'}`}>Estimated Amount</p>
-                    <p className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>₹{nextDeadline.estimatedAmount.toLocaleString('en-IN')}</p>
+                    <p className={`text-base md:text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>₹{nextDeadline.estimatedAmount.toLocaleString('en-IN')}</p>
                   </div>
                   <div>
                     <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-500'}`}>Vault Balance</p>
-                    <p className={`text-lg font-bold ${vaultBalance >= nextDeadline.estimatedAmount ? (isDarkMode ? 'text-green-400' : 'text-green-600') : (isDarkMode ? 'text-red-400' : 'text-red-600')}`}>
+                    <p className={`text-base md:text-lg font-bold ${vaultBalance >= nextDeadline.estimatedAmount ? (isDarkMode ? 'text-green-400' : 'text-green-600') : (isDarkMode ? 'text-red-400' : 'text-red-600')}`}>
                       ₹{vaultBalance.toLocaleString('en-IN')} {vaultBalance >= nextDeadline.estimatedAmount ? '✓' : '⚠'}
                     </p>
                   </div>
@@ -263,7 +263,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <button
                 onClick={() => setCurrentView('TAX_CALENDAR')}
-                className={`px-4 py-2 rounded-lg font-medium ${isDarkMode ? 'bg-amber-500 hover:bg-amber-600' : 'bg-amber-600 hover:bg-amber-700'} text-white transition-colors`}
+                className={`w-full md:w-auto px-4 py-2 rounded-lg font-medium text-sm ${isDarkMode ? 'bg-amber-500 hover:bg-amber-600' : 'bg-amber-600 hover:bg-amber-700'} text-white transition-colors`}
               >
                 View Calendar
               </button>
@@ -276,7 +276,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <QuickActions setCurrentView={setCurrentView} vaultBalance={vaultBalance} isDarkMode={isDarkMode} />
         </div>
 
-        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border rounded-xl p-6 shadow-sm`}>
+        <div className={`${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border-2 rounded-xl p-6 shadow-sm`}>
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -299,9 +299,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
             {recentTransactions.map(transaction => (
               <div
                 key={transaction.id}
-                className={`flex items-center justify-between p-4 rounded-lg ${
-                  isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700' : 'bg-gray-50 hover:bg-gray-100'
-                } transition-colors cursor-pointer`}
+                className={`flex items-center justify-between p-4 rounded-xl ${
+                  isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700 border border-slate-700' : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                } transition-all cursor-pointer group`}
                 onClick={() => setCurrentView('TRANSACTIONS')}
               >
                 <div className="flex items-center gap-4">

@@ -50,7 +50,7 @@ export const SmartTaxVault: React.FC<SmartTaxVaultProps> = ({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 animate-fade-in-up">
       {/* Main Vault Card - Hero Section */}
-      <div className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border-b border-gray-200 dark:border-slate-800 transition-colors">
+      <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">💼 Smart Tax Vault</h1>
           <p className="text-gray-600 dark:text-gray-400 mb-8">

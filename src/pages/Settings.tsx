@@ -104,27 +104,29 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
   const formatCurrency = (val: number) => `₹${(val/1000).toFixed(0)}k`;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 animate-fade-in-up">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 pb-20 animate-fade-in-up">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
           <div className="flex items-center gap-3">
-            <SettingsIcon className="text-blue-600 dark:text-blue-400" size={32} />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
+            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <SettingsIcon className="text-blue-600 dark:text-blue-400" size={24} />
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 pt-20 md:pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
           {/* Sidebar Tabs */}
-          <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-4 sticky top-24">
+          <div className="md:col-span-1">
+            <div className="bg-white dark:bg-slate-900 rounded-xl border-2 border-gray-200 dark:border-slate-800 p-3 md:p-4 sticky top-24 md:top-28 shadow-sm">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full text-left px-4 py-3 rounded-lg mb-2 font-medium transition flex items-center gap-3 ${
+                  className={`w-full text-left px-4 py-3 rounded-lg mb-2 font-medium transition flex items-center gap-3 text-sm md:text-base ${
                     activeTab === tab.id
                       ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-l-4 border-blue-600 dark:border-blue-400'
                       : 'text-gray-700 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800'
@@ -138,7 +140,7 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
               <div className="my-4 border-t border-gray-200 dark:border-slate-800" />
               
               <button
-                className="w-full text-left px-4 py-3 rounded-lg font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition flex items-center gap-3"
+                className="w-full text-left px-4 py-3 rounded-lg font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition flex items-center gap-3 text-sm md:text-base"
               >
                 <LogOut size={18} />
                 Sign Out
@@ -147,8 +149,8 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
           </div>
 
           {/* Content Area */}
-          <div className="lg:col-span-3">
-            <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-8 shadow-sm">
+          <div className="md:col-span-3">
+            <div className="bg-white dark:bg-slate-900 rounded-xl border-2 border-gray-200 dark:border-slate-800 p-6 md:p-8 shadow-sm">
               {activeTab === 'account' && (
                 <div className="space-y-8 animate-fade-in">
                   <div>

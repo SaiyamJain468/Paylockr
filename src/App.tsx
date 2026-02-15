@@ -5,13 +5,13 @@ import { getUserData, getDashboardStats, ClassifiedIncome } from './utils/multiU
 import { CheckCircle, AlertTriangle, Info, X } from 'lucide-react';
 
 // Layout
-import { Sidebar } from './components/layout/Sidebar';
-import { Header } from './components/layout/Header';
-import { Footer } from './components/layout/Footer';
+import { Sidebar } from './components/Layout/Sidebar';
+import { Header } from './components/Layout/Header';
+import { Footer } from './components/Layout/Footer';
 
 // Auth
-import { Login } from './components/auth/Login';
-import { SignUp } from './components/auth/SignUp';
+import { Login } from './components/Auth/Login';
+import { SignUp } from './components/Auth/SignUp';
 
 // UI Components
 import { Button } from './components/common/Button';
@@ -35,9 +35,11 @@ import { supabase } from './services/supabaseClient';
 // Toast Component
 const Toast = ({ message, type, onClose }: { message: string, type: 'success' | 'error' | 'info', onClose: () => void }) => {
   useEffect(() => {
-    const timer = setTimeout(onClose, 3000);
+    const timer = setTimeout(() => {
+      if (onClose) onClose();
+    }, 3000);
     return () => clearTimeout(timer);
-  }, [onClose]);
+  }, []); // FIX: Don't depend on onClose to prevent infinite loops
 
   const bgColors = {
     success: 'bg-teal-600',
@@ -170,26 +172,33 @@ export default function App() {
   const handleLoginSuccess = () => {
     const storedData = sessionStorage.getItem('userData');
     if (storedData) {
-      const user = JSON.parse(storedData);
-      setSession({ user });
-      
-      // Load data immediately on login interaction
-      const userId = user.id || 'saiyam';
-      const data = getUserData(userId);
-      const stats = getDashboardStats(userId);
-      setFinancialData({
-        transactions: data.transactions,
-        expenses: data.expenses,
-        invoices: data.invoices,
-        vaultEntries: data.vaultEntries,
-        classifiedIncomes: data.classifiedIncomes,
-        bankAccounts: data.bankAccounts,
-        vaultDocuments: data.vaultDocuments,
-        stats: stats
-      });
+      try {
+        const user = JSON.parse(storedData);
+        setSession({ user });
+        
+        // Load data immediately on login interaction
+        const userId = user.id || 'saiyam';
+        const data = getUserData(userId);
+        const stats = getDashboardStats(userId);
+        setFinancialData({
+          transactions: data.transactions,
+          expenses: data.expenses,
+          invoices: data.invoices,
+          vaultEntries: data.vaultEntries,
+          classifiedIncomes: data.classifiedIncomes,
+          bankAccounts: data.bankAccounts,
+          vaultDocuments: data.vaultDocuments,
+          stats: stats
+        });
 
-      setView('DASHBOARD');
-      setToast({ msg: `Welcome back, ${user.name}!`, type: 'success' });
+        setView('DASHBOARD');
+        setToast({ msg: `Welcome back, ${user.name}!`, type: 'success' });
+      } catch (err) {
+        console.error("Failed to parse user data:", err);
+        sessionStorage.removeItem('userData');
+        setToast({ msg: 'Session expired. Please login again.', type: 'error' });
+        setView('LOGIN');
+      }
     }
   };
 
@@ -257,22 +266,24 @@ export default function App() {
   const userId = session.user.id || 'saiyam';
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
       {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
       
       <Sidebar view={view} setView={setView} handleLogout={handleLogout} />
 
-      <main className={`flex-1 ml-64 flex flex-col min-h-screen ${view === 'DASHBOARD' ? 'p-0' : 'p-8'}`}>
+      <main className="md:ml-64 min-h-screen">
         {view !== 'DASHBOARD' && (
-          <Header 
-            view={view} 
-            session={session} 
-            notifications={notifications} 
-            setView={setView} 
-          />
+          <div className="p-4 md:p-8">
+            <Header 
+              view={view} 
+              session={session} 
+              notifications={notifications} 
+              setView={setView} 
+            />
+          </div>
         )}
 
-        <div className="flex-1">
+        <div className={view === 'DASHBOARD' ? '' : 'px-4 md:px-8 pb-8'}>
           {view === 'DASHBOARD' && (
             <Dashboard 
               transactions={transactions}
@@ -310,7 +321,11 @@ export default function App() {
           {view === 'HELP' && <Help />}
         </div>
         
-        {view !== 'DASHBOARD' && <Footer />}
+        {view !== 'DASHBOARD' && (
+          <div className="px-4 md:px-8">
+            <Footer />
+          </div>
+        )}
       </main>
     </div>
   );

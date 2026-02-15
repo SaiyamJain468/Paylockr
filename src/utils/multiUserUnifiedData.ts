@@ -354,7 +354,11 @@ export function generateUserData(userId: string) {
   ];
 
   return {
-    transactions: transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+    transactions: transactions.sort((a, b) => {
+      const dateA = a.date instanceof Date ? a.date.getTime() : new Date(a.date).getTime();
+      const dateB = b.date instanceof Date ? b.date.getTime() : new Date(b.date).getTime();
+      return dateB - dateA;
+    }),
     expenses: expenses.sort((a, b) => b.date.getTime() - a.date.getTime()),
     invoices: invoices.sort((a, b) => b.date.getTime() - a.date.getTime()),
     vaultEntries,
@@ -377,19 +381,50 @@ export function generateUserData(userId: string) {
 // ============ GLOBAL DATA ACCESS ============
 const ALL_USER_DATA: Record<string, any> = {};
 
-// Initialize on load
-DEMO_USERS.forEach(user => {
-  ALL_USER_DATA[user.id] = generateUserData(user.id);
-});
+// Initialize from localStorage or generate new
+const initializeUserData = () => {
+  const stored = localStorage.getItem('PAYLOCKR_USER_DATA');
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      // Restore dates
+      Object.keys(parsed).forEach(userId => {
+        const data = parsed[userId];
+        data.transactions = data.transactions.map((t: any) => ({ ...t, date: new Date(t.date) }));
+        data.expenses = data.expenses.map((e: any) => ({ ...e, date: new Date(e.date) }));
+        data.invoices = data.invoices.map((i: any) => ({ ...i, date: new Date(i.date), dueDate: new Date(i.dueDate) }));
+        data.vaultEntries = data.vaultEntries.map((v: any) => ({ ...v, lockedDate: new Date(v.lockedDate) }));
+        data.bankAccounts = data.bankAccounts.map((b: any) => ({ ...b, lastUpdated: new Date(b.lastUpdated) }));
+        data.vaultDocuments = data.vaultDocuments.map((d: any) => ({ ...d, uploadedDate: new Date(d.uploadedDate) }));
+        ALL_USER_DATA[userId] = data;
+      });
+      return;
+    } catch (e) {
+      console.error('Failed to load stored data', e);
+    }
+  }
+  
+  // Generate fresh data
+  DEMO_USERS.forEach(user => {
+    ALL_USER_DATA[user.id] = generateUserData(user.id);
+  });
+  
+  // Save to localStorage
+  localStorage.setItem('PAYLOCKR_USER_DATA', JSON.stringify(ALL_USER_DATA));
+};
+
+initializeUserData();
 
 export function authenticateUser(email: string, password: string) {
-  const user = DEMO_USERS.find(u => u.email === email && (u.password === password || password === 'PayLockr@123'));
+  // FIX: Only allow exact password match, not 'PayLockr@123' for all users
+  const user = DEMO_USERS.find(u => u.email === email && u.password === password);
   return user ? { ...user } : null;
 }
 
 export function getUserData(userId: string) {
   if (!ALL_USER_DATA[userId]) {
     ALL_USER_DATA[userId] = generateUserData(userId);
+    localStorage.setItem('PAYLOCKR_USER_DATA', JSON.stringify(ALL_USER_DATA));
   }
   return ALL_USER_DATA[userId];
 }
@@ -417,7 +452,7 @@ function getMonthlyBreakdown(transactions: Transaction[]) {
     breakdown[monthKey] = { name: monthKey, income: 0, tax: 0 };
 
     const monthTransactions = transactions.filter(t => {
-      const tDate = new Date(t.date);
+      const tDate = t.date instanceof Date ? t.date : new Date(t.date);
       return tDate.getMonth() === monthDate.getMonth() && tDate.getFullYear() === monthDate.getFullYear();
     });
 
