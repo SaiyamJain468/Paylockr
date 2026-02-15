@@ -1,20 +1,159 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Paylockr 💰
 
-# Run and deploy your AI Studio app
+A comprehensive financial management and tax compliance platform designed to help individuals and businesses manage their finances efficiently and stay compliant with Indian tax regulations.
 
-This contains everything you need to run your app locally.
+## Features ✨
 
-View your app in AI Studio: https://ai.studio/apps/drive/12Su8VeScgBU0hlcvoBwmBH7RZpc-02SB
+- **Financial Dashboard** - Track your income, expenses, and financial overview at a glance
+- **Tax Calendar** - Stay updated with important tax deadlines and compliance dates
+- **Income Management** - Record and categorize your income sources
+- **Expense Tracking** - Monitor and organize your spending patterns
+- **Tax Planning** - Get insights on tax-saving strategies and deductions
+- **Secure Authentication** - User authentication with Supabase backend
+- **Responsive Design** - Works seamlessly on desktop and mobile devices
 
-## Run Locally
+## Tech Stack 🛠️
 
-**Prerequisites:**  Node.js
+- **Frontend:** React + TypeScript
+- **Build Tool:** Vite
+- **Styling:** CSS3
+- **Backend:** Supabase (Authentication & Database)
+- **Deployment:** Netlify
 
+## Project Structure 📁
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```
+src/
+├── components/          # Reusable UI components
+│   └── Button.tsx
+├── pages/              # Page components
+├── services/           # API and service integrations
+│   ├── geminiService.ts
+│   └── supabaseClient.ts
+├── styles/             # Global and component styles
+│   └── designSystem.ts
+├── utils/              # Utility functions
+├── App.tsx             # Main app component
+├── main.tsx            # Entry point
+└── index.css           # Global styles
+```
+
+## Getting Started 🚀
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/SaiyamJain468/Paylockr.git
+   cd Paylockr
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Create environment file**
+   ```bash
+   touch .env.local
+   ```
+   Add your Supabase credentials:
+   ```
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_GEMINI_API_KEY=your_gemini_api_key
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:5173](http://localhost:5173) in your browser
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+This generates optimized files in the `dist` folder.
+
+### Deploy to Netlify
+
+1. **Install Netlify CLI**
+   ```bash
+   npm install -g netlify-cli
+   ```
+
+2. **Login to Netlify**
+   ```bash
+   netlify login
+   ```
+
+3. **Deploy**
+   ```bash
+   npm run build
+   netlify deploy --prod
+   ```
+
+## Important Notes ⚠️
+
+When working with JSX and text content containing comparison operators:
+- Replace `>` with `&gt;`
+- Replace `<` with `&lt;`
+
+Example:
+```jsx
+// ❌ Wrong
+<li>Turnover > ₹10 lakh</li>
+
+// ✅ Correct
+<li>Turnover &gt; ₹10 lakh</li>
+```
+
+## Key Features in Detail 📋
+
+### Tax Calendar
+Comprehensive tax compliance calendar for Indian taxpayers including:
+- Income Tax deadlines
+- GST filing dates
+- TDS deposit schedules
+- Audit requirements
+- Quarterly advance tax payments
+
+### Financial Dashboard
+- Real-time balance overview
+- Income vs. Expense visualization
+- Transaction history
+- Financial health metrics
+
+### Authentication
+Secure user authentication powered by Supabase with:
+- Email/password login
+- Secure session management
+- User data protection
+
+## Contributing 🤝
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License 📄
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support 💬
+
+For support, email support@paylockr.com or open an issue on GitHub.
+
+## Author ✍️
+
+**Saiyam Jain**
+- GitHub: [@SaiyamJain468](https://github.com/SaiyamJain468)
+
+---
+
+**Built with ❤️ for financial freedom**
