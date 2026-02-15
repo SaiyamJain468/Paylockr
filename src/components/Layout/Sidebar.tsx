@@ -50,10 +50,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ view, setView, handleLogout })
       )}
 
       {/* Sidebar */}
-      <aside className={`w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 flex flex-col fixed h-full z-40 transition-transform duration-300 ${
-        isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      <aside className={`w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 flex flex-col fixed h-full transition-transform duration-300 ${
+        isMobileOpen ? 'translate-x-0 z-40' : '-translate-x-full md:translate-x-0 z-40'
       }`}>
-        <div className="p-6 flex items-center gap-3 border-b border-gray-200 dark:border-slate-800">
+        <div className="p-6 pl-16 md:pl-6 flex items-center gap-3 border-b border-gray-200 dark:border-slate-800">
           <ShieldCheck className="text-blue-600" size={28} />
           <span className="text-xl font-black text-gray-900 dark:text-white tracking-tight">PayLockr</span>
         </div>
