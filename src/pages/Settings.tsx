@@ -292,18 +292,18 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
                 <div className="space-y-8 animate-fade-in">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Tax Planning Simulator</h2>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">Visualize your tax liability and see how savings impact your bottom line.</p>
+                      <h2 className="text-2xl font-black uppercase text-black dark:text-white mb-2">TAX PLANNING SIMULATOR</h2>
+                      <p className="text-sm font-bold uppercase text-gray-600 dark:text-gray-500">Visualize your tax liability and maximize savings</p>
                     </div>
-                    <div className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded text-sm font-semibold">
-                      {settings.regime} Regime
+                    <div className="px-4 py-2 bg-yellow-400 text-black font-black uppercase text-sm">
+                      {settings.regime} REGIME
                     </div>
                   </div>
 
                   {/* Simulator Controls */}
-                  <div className="bg-gray-50 dark:bg-slate-800/50 p-6 rounded-xl border border-gray-200 dark:border-slate-700">
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
-                      <Calculator size={18} /> Projected Annual Income
+                  <div className="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 p-6 border-l-8 border-cyan-500">
+                    <label className="block text-sm font-black uppercase text-black dark:text-white mb-4 flex items-center gap-2">
+                      <Calculator size={20} /> PROJECTED ANNUAL INCOME
                     </label>
                     <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
                       <div className="flex-1 w-full">
@@ -314,85 +314,109 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
                           step="50000"
                           value={simulatedIncome}
                           onChange={(e) => setSimulatedIncome(Number(e.target.value))}
-                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600"
+                          className="w-full h-3 bg-gray-300 dark:bg-gray-700 appearance-none cursor-pointer accent-cyan-500"
+                          style={{
+                            background: `linear-gradient(to right, #06b6d4 0%, #06b6d4 ${((simulatedIncome - 500000) / 4500000) * 100}%, #d1d5db ${((simulatedIncome - 500000) / 4500000) * 100}%, #d1d5db 100%)`
+                          }}
                         />
-                        <div className="flex justify-between text-xs text-gray-500 mt-2">
+                        <div className="flex justify-between text-xs font-bold uppercase text-gray-600 dark:text-gray-400 mt-2">
                           <span>₹5L</span>
                           <span>₹25L</span>
                           <span>₹50L</span>
                         </div>
                       </div>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-bold">₹</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-400 font-black text-lg">₹</span>
                         <input 
                           type="number" 
                           value={simulatedIncome}
                           onChange={(e) => setSimulatedIncome(Number(e.target.value))}
-                          className="w-36 pl-8 pr-4 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg text-right font-bold text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-40 pl-8 pr-4 py-3 border-4 border-cyan-500 bg-white dark:bg-black text-right font-black text-xl text-black dark:text-white outline-none"
                         />
                       </div>
                     </div>
 
-                    <div className="border-t border-gray-200 dark:border-slate-700 pt-6">
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Investments & Deductions</label>
+                    <div className="border-t-4 border-white dark:border-gray-800 pt-6">
+                      <label className="block text-sm font-black uppercase text-black dark:text-white mb-4">INVESTMENTS & DEDUCTIONS</label>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div 
-                          className={`p-4 rounded-lg border-2 cursor-pointer transition ${simulated80C ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800'}`}
+                          className={`p-5 border-4 cursor-pointer transition-all ${
+                            simulated80C 
+                              ? 'border-green-500 bg-green-50 dark:bg-green-900/30 shadow-lg' 
+                              : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-green-500'
+                          }`}
                           onClick={() => setSimulated80C(!simulated80C)}
                         >
-                          <div className="flex justify-between items-start mb-2">
-                            <PiggyBank size={20} className={simulated80C ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'} />
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${simulated80C ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300'}`}>
-                              {simulated80C && <CheckCircle size={12} />}
+                          <div className="flex justify-between items-start mb-3">
+                            <PiggyBank size={28} className={simulated80C ? 'text-green-600 dark:text-green-400' : 'text-gray-400'} />
+                            <div className={`w-6 h-6 border-4 flex items-center justify-center ${
+                              simulated80C ? 'border-green-600 bg-green-600' : 'border-gray-400'
+                            }`}>
+                              {simulated80C && <CheckCircle size={16} className="text-white" />}
                             </div>
                           </div>
-                          <p className="font-bold text-gray-900 dark:text-white text-sm">Section 80C</p>
-                          <p className="text-xs text-gray-500 mt-1">ELSS, PF, LIC (Max ₹1.5L)</p>
+                          <p className="font-black text-black dark:text-white text-base mb-1">SECTION 80C</p>
+                          <p className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400">ELSS, PF, LIC</p>
+                          <p className="text-lg font-black text-green-600 dark:text-green-400 mt-2">₹1,50,000</p>
                         </div>
 
                         <div 
-                          className={`p-4 rounded-lg border-2 cursor-pointer transition ${simulated80D ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800'}`}
+                          className={`p-5 border-4 cursor-pointer transition-all ${
+                            simulated80D 
+                              ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 shadow-lg' 
+                              : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-purple-500'
+                          }`}
                           onClick={() => setSimulated80D(!simulated80D)}
                         >
-                          <div className="flex justify-between items-start mb-2">
-                            <Shield size={20} className={simulated80D ? 'text-purple-600 dark:text-purple-400' : 'text-gray-400'} />
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${simulated80D ? 'border-purple-600 bg-purple-600 text-white' : 'border-gray-300'}`}>
-                              {simulated80D && <CheckCircle size={12} />}
+                          <div className="flex justify-between items-start mb-3">
+                            <Shield size={28} className={simulated80D ? 'text-purple-600 dark:text-purple-400' : 'text-gray-400'} />
+                            <div className={`w-6 h-6 border-4 flex items-center justify-center ${
+                              simulated80D ? 'border-purple-600 bg-purple-600' : 'border-gray-400'
+                            }`}>
+                              {simulated80D && <CheckCircle size={16} className="text-white" />}
                             </div>
                           </div>
-                          <p className="font-bold text-gray-900 dark:text-white text-sm">Section 80D</p>
-                          <p className="text-xs text-gray-500 mt-1">Health Insurance (Max ₹25k)</p>
+                          <p className="font-black text-black dark:text-white text-base mb-1">SECTION 80D</p>
+                          <p className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400">HEALTH INSURANCE</p>
+                          <p className="text-lg font-black text-purple-600 dark:text-purple-400 mt-2">₹25,000</p>
                         </div>
 
                         <div 
-                          className={`p-4 rounded-lg border-2 cursor-pointer transition ${simulatedNPS ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800'}`}
+                          className={`p-5 border-4 cursor-pointer transition-all ${
+                            simulatedNPS 
+                              ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 shadow-lg' 
+                              : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-orange-500'
+                          }`}
                           onClick={() => setSimulatedNPS(!simulatedNPS)}
                         >
-                          <div className="flex justify-between items-start mb-2">
-                            <BookOpen size={20} className={simulatedNPS ? 'text-orange-600 dark:text-orange-400' : 'text-gray-400'} />
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${simulatedNPS ? 'border-orange-600 bg-orange-600 text-white' : 'border-gray-300'}`}>
-                              {simulatedNPS && <CheckCircle size={12} />}
+                          <div className="flex justify-between items-start mb-3">
+                            <BookOpen size={28} className={simulatedNPS ? 'text-orange-600 dark:text-orange-400' : 'text-gray-400'} />
+                            <div className={`w-6 h-6 border-4 flex items-center justify-center ${
+                              simulatedNPS ? 'border-orange-600 bg-orange-600' : 'border-gray-400'
+                            }`}>
+                              {simulatedNPS && <CheckCircle size={16} className="text-white" />}
                             </div>
                           </div>
-                          <p className="font-bold text-gray-900 dark:text-white text-sm">NPS (80CCD)</p>
-                          <p className="text-xs text-gray-500 mt-1">National Pension (Max ₹50k)</p>
+                          <p className="font-black text-black dark:text-white text-base mb-1">NPS (80CCD)</p>
+                          <p className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400">NATIONAL PENSION</p>
+                          <p className="text-lg font-black text-orange-600 dark:text-orange-400 mt-2">₹50,000</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Stacked Chart Section */}
-                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+                  {/* Chart Section */}
+                  <div className="bg-white dark:bg-black border-l-8 border-yellow-400 p-6 shadow-xl">
                     <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white">Liability vs. Savings Analysis</h3>
-                      <div className="flex gap-4 text-xs font-medium">
+                      <h3 className="text-xl font-black uppercase text-black dark:text-white">TAX LIABILITY COMPARISON</h3>
+                      <div className="flex gap-4 text-xs font-bold uppercase">
                         <div className="flex items-center gap-2">
-                          <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                          <span className="text-gray-600 dark:text-gray-400">Tax Payable</span>
+                          <span className="w-4 h-4 bg-red-500"></span>
+                          <span className="text-gray-600 dark:text-gray-400">TAX PAYABLE</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
-                          <span className="text-gray-600 dark:text-gray-400">Savings</span>
+                          <span className="w-4 h-4 bg-green-500"></span>
+                          <span className="text-gray-600 dark:text-gray-400">SAVINGS</span>
                         </div>
                       </div>
                     </div>
@@ -402,19 +426,19 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
                         <BarChart
                           data={chartData}
                           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                          barSize={50}
+                          barSize={60}
                         >
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#334155' : '#e5e7eb'} />
                           <XAxis 
                             dataKey="name" 
                             stroke={isDark ? '#94a3b8' : '#6b7280'} 
-                            tick={{ fill: isDark ? '#94a3b8' : '#6b7280' }}
+                            tick={{ fill: isDark ? '#94a3b8' : '#6b7280', fontWeight: 'bold' }}
                             tickLine={false}
                           />
                           <YAxis 
                             stroke={isDark ? '#94a3b8' : '#6b7280'} 
                             tickFormatter={formatCurrency}
-                            tick={{ fill: isDark ? '#94a3b8' : '#6b7280' }}
+                            tick={{ fill: isDark ? '#94a3b8' : '#6b7280', fontWeight: 'bold' }}
                             tickLine={false}
                             axisLine={false}
                           />
@@ -423,56 +447,50 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
                               backgroundColor: isDark ? '#1e293b' : '#ffffff',
                               borderColor: isDark ? '#334155' : '#e5e7eb',
                               color: isDark ? '#ffffff' : '#000000',
-                              borderRadius: '8px',
-                              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                              borderRadius: '0px',
+                              border: '4px solid',
+                              fontWeight: 'bold'
                             }}
                             cursor={{ fill: 'transparent' }}
                             formatter={(value: number, name: string) => [`₹${value.toLocaleString('en-IN')}`, name]}
                           />
-                          {/* Stacked Bars */}
-                          <Bar dataKey="Tax Liability" stackId="a" fill="#ef4444" radius={[0, 0, 4, 4]} />
-                          <Bar dataKey="Savings" stackId="a" fill="#10b981" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="Tax Liability" stackId="a" fill="#ef4444" radius={[0, 0, 0, 0]} />
+                          <Bar dataKey="Savings" stackId="a" fill="#10b981" radius={[0, 0, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
 
-                    {/* Infographic / Metrics */}
+                    {/* Metrics */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                       <div className="p-4 rounded-xl border-l-4 border-red-500 bg-red-50 dark:bg-red-900/10">
-                          <p className="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wider mb-1">Base Liability</p>
-                          <p className="text-2xl font-bold text-slate-900 dark:text-white">₹{taxNoSavings.toLocaleString('en-IN')}</p>
-                          <p className="text-xs text-slate-500 mt-1">If no deductions applied</p>
+                       <div className="p-5 border-l-8 border-red-500 bg-red-50 dark:bg-red-900/20">
+                          <p className="text-xs font-black text-red-600 dark:text-red-400 uppercase mb-2">BASE LIABILITY</p>
+                          <p className="text-3xl font-black text-black dark:text-white">₹{taxNoSavings.toLocaleString('en-IN')}</p>
+                          <p className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400 mt-1">Without deductions</p>
                        </div>
 
-                       <div className="p-4 rounded-xl border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/10">
-                          <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">Your Plan Savings</p>
+                       <div className="p-5 border-l-8 border-blue-500 bg-blue-50 dark:bg-blue-900/20">
+                          <p className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase mb-2">YOUR PLAN SAVINGS</p>
                           <div className="flex items-center gap-2">
-                            <p className="text-2xl font-bold text-slate-900 dark:text-white">₹{savingsSimulated.toLocaleString('en-IN')}</p>
-                            <span className="text-xs font-bold text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">
-                              {taxNoSavings > 0 ? ((savingsSimulated / taxNoSavings) * 100).toFixed(1) : 0}% Saved
+                            <p className="text-3xl font-black text-black dark:text-white">₹{savingsSimulated.toLocaleString('en-IN')}</p>
+                            <span className="text-xs font-black text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-1">
+                              {taxNoSavings > 0 ? ((savingsSimulated / taxNoSavings) * 100).toFixed(0) : 0}%
                             </span>
                           </div>
-                          <p className="text-xs text-slate-500 mt-1">Based on selected deductions</p>
+                          <p className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400 mt-1">Based on selections</p>
                        </div>
 
-                       <div className="p-4 rounded-xl border-l-4 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/10 relative overflow-hidden group cursor-pointer hover:shadow-md transition-shadow">
-                          <div className="absolute right-0 top-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <Target size={48} className="text-emerald-600" />
-                          </div>
-                          <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">Potential Savings</p>
-                          <p className="text-2xl font-bold text-slate-900 dark:text-white">₹{savingsOptimized.toLocaleString('en-IN')}</p>
-                          <div className="flex items-center gap-1 text-xs text-emerald-700 dark:text-emerald-400 mt-1 font-medium">
-                            <span>Maximize deductions</span>
-                            <ArrowRight size={12} />
-                          </div>
+                       <div className="p-5 border-l-8 border-green-500 bg-green-50 dark:bg-green-900/20">
+                          <p className="text-xs font-black text-green-600 dark:text-green-400 uppercase mb-2">MAX POTENTIAL</p>
+                          <p className="text-3xl font-black text-black dark:text-white">₹{savingsOptimized.toLocaleString('en-IN')}</p>
+                          <p className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400 mt-1">With all deductions</p>
                        </div>
                     </div>
 
-                    <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 flex gap-3">
-                      <Info className="text-blue-500 flex-shrink-0 mt-0.5" size={18} />
-                      <div className="text-sm text-slate-600 dark:text-slate-400">
-                        <p className="font-medium text-slate-900 dark:text-white mb-1">Did you know?</p>
-                        <p>Under the {settings.regime} Regime, maximizing your Section 80C ({settings.regime === 'Old' ? '₹1.5L limit' : 'Not applicable'}) and 80D limits can significantly reduce your tax burden. Use the simulator above to see how income changes affect your tax slab.</p>
+                    <div className="mt-6 p-5 bg-yellow-50 dark:bg-yellow-900/20 border-l-8 border-yellow-400 flex gap-3">
+                      <Info className="text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" size={20} />
+                      <div className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                        <p className="font-black text-black dark:text-white mb-2 uppercase">💡 PRO TIP</p>
+                        <p>Under the {settings.regime} Regime, you can save up to ₹{savingsOptimized.toLocaleString('en-IN')} by maximizing your deductions. Start investing in tax-saving instruments today!</p>
                       </div>
                     </div>
                   </div>

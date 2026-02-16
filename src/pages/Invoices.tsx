@@ -56,17 +56,17 @@ export const Invoices: React.FC<InvoicesProps> = ({ invoices, onAdd, onDelete, o
     <div className="min-h-screen pb-20 animate-fade-in-up">
       {/* Header */}
       <div className="bg-white dark:bg-black border-b-2 border-gray-200 dark:border-gray-800 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-3">
-              <FileText className="w-8 h-8 text-yellow-400" />
-              <h1 className="text-3xl font-black uppercase text-black dark:text-white">INVOICES</h1>
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
+              <h1 className="text-2xl sm:text-3xl font-black uppercase text-black dark:text-white">INVOICES</h1>
             </div>
             <button 
               onClick={() => setShowCreateModal(true)}
-              className="px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase transition-all flex items-center gap-2"
+              className="w-full sm:w-auto px-4 py-2 sm:px-6 sm:py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase transition-all flex items-center justify-center gap-2"
             >
-              <Plus size={20} />
+              <Plus size={18} />
               CREATE
             </button>
           </div>

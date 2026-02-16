@@ -38,7 +38,7 @@ const Toast = ({ message, type, onClose }: { message: string, type: 'success' | 
       if (onClose) onClose();
     }, 3000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [onClose]);
 
   const bgColors = {
     success: 'bg-teal-600',
@@ -358,7 +358,13 @@ export default function App() {
             setFinancialData(prev => prev ? ({...prev, expenses: [exp, ...prev.expenses]}) : null);
             setToast({ msg: 'Expense added', type: 'success' });
           }} />}
-          {view === 'BANK_ACCOUNTS' && <BankAccounts accounts={bankAccounts} />}
+          {view === 'BANK_ACCOUNTS' && <BankAccounts accounts={bankAccounts} onDelete={(accId) => {
+            setFinancialData(prev => prev ? ({...prev, bankAccounts: prev.bankAccounts.filter(a => a.id !== accId)}) : null);
+            setToast({ msg: 'Account deleted successfully', type: 'success' });
+          }} onUpdate={(acc) => {
+            setFinancialData(prev => prev ? ({...prev, bankAccounts: prev.bankAccounts.map(a => a.id === acc.id ? acc : a)}) : null);
+            setToast({ msg: 'Account updated successfully', type: 'success' });
+          }} />}
           {view === 'TAX_CALENDAR' && <TaxCalendar userId={userId} />}
           {view === 'TAX_MANAGEMENT' && <TaxManagement stats={stats} />}
           {view === 'HELP' && <Help />}

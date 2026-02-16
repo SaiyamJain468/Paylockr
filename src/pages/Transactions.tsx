@@ -146,32 +146,32 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
       {modalOpen && <TransactionModal onClose={() => setModalOpen(false)} onSave={onAdd} />}
       
       <div className="bg-white dark:bg-black border-b-2 border-gray-200 dark:border-gray-800 shadow-lg sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex flex-col gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
               <input
                 type="text"
-                placeholder="SEARCH TRANSACTIONS..."
+                placeholder="SEARCH..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-black text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-yellow-400 outline-none font-bold uppercase text-xs"
+                className="w-full pl-9 pr-3 py-2 border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-black text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-yellow-400 outline-none font-bold uppercase text-xs"
               />
             </div>
             
-            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-              <div className="flex bg-gray-100 dark:bg-gray-900 p-1">
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              <div className="flex bg-gray-100 dark:bg-gray-900 p-0.5 flex-shrink-0">
                 {(['ALL', 'INCOME', 'EXPENSE'] as const).map(type => (
                   <button
                     key={type}
                     onClick={() => setFilterType(type)}
-                    className={`px-4 py-1.5 text-xs font-bold uppercase transition-all ${
+                    className={`px-2.5 py-1.5 text-[10px] font-bold uppercase transition-all whitespace-nowrap ${
                       filterType === type
                         ? 'bg-yellow-400 text-black'
                         : 'text-black dark:text-white hover:text-yellow-400'
                     }`}
                   >
-                    {type === 'ALL' ? 'ALL' : type}
+                    {type}
                   </button>
                 ))}
               </div>
@@ -179,68 +179,68 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
               <select
                 value={timePeriod}
                 onChange={(e) => setTimePeriod(e.target.value as TimePeriod)}
-                className="px-3 py-2 bg-white dark:bg-black border-2 border-gray-200 dark:border-gray-800 text-xs text-black dark:text-white focus:outline-none font-bold uppercase"
+                className="px-2 py-1.5 bg-white dark:bg-black border-2 border-gray-200 dark:border-gray-800 text-[10px] text-black dark:text-white focus:outline-none font-bold uppercase flex-shrink-0"
               >
                 <option value="TODAY">TODAY</option>
-                <option value="THIS_WEEK">THIS WEEK</option>
-                <option value="THIS_MONTH">THIS MONTH</option>
-                <option value="LAST_3M">LAST 3M</option>
-                <option value="CUSTOM">ALL TIME</option>
+                <option value="THIS_WEEK">WEEK</option>
+                <option value="THIS_MONTH">MONTH</option>
+                <option value="LAST_3M">3M</option>
+                <option value="CUSTOM">ALL</option>
               </select>
 
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`px-3 py-2 text-xs font-bold uppercase flex items-center gap-2 transition-colors border-2 ${
+                className={`p-1.5 text-xs font-bold uppercase flex items-center gap-1 transition-colors border-2 flex-shrink-0 ${
                   showFilters
                     ? 'bg-cyan-500 border-cyan-500 text-black'
                     : 'bg-white dark:bg-black border-gray-200 dark:border-gray-800 text-black dark:text-white'
                 }`}
               >
-                <Filter size={16} />
+                <Filter size={14} />
               </button>
               
-              <Button onClick={() => setModalOpen(true)} className="whitespace-nowrap bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase">
-                <div className="flex items-center">
-                  <div className="mr-2"><Plus size={18} /></div> ADD
+              <Button onClick={() => setModalOpen(true)} className="whitespace-nowrap bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase flex-shrink-0 text-[10px] px-2 py-1.5">
+                <div className="flex items-center gap-1">
+                  <Plus size={14} /> ADD
                 </div>
               </Button>
             </div>
           </div>
 
           {showFilters && (
-            <div className="mt-4 pt-4 border-t-2 border-gray-200 dark:border-gray-800 grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+            <div className="mt-3 pt-3 border-t-2 border-gray-200 dark:border-gray-800 space-y-3 animate-fade-in">
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">CATEGORIES</h3>
-                <div className="flex flex-wrap gap-2">
+                <h3 className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2">CATEGORIES</h3>
+                <div className="flex flex-wrap gap-1.5">
                   {Object.entries(CATEGORIES).map(([key, value]: any) => (
                     <button
                       key={key}
                       onClick={() => toggleCategory(key)}
-                      className={`px-3 py-1.5 text-xs font-bold uppercase border-2 transition-colors flex items-center gap-1.5 ${
+                      className={`px-2 py-1 text-[10px] font-bold uppercase border-2 transition-colors flex items-center gap-1 ${
                         selectedCategories.includes(key)
                           ? 'bg-cyan-500 border-cyan-500 text-black'
                           : 'bg-white dark:bg-black border-gray-200 dark:border-gray-800 text-black dark:text-white'
                       }`}
                     >
-                      <span>{value.icon}</span> {key}
+                      <span className="text-xs">{value.icon}</span> {key}
                     </button>
                   ))}
                 </div>
               </div>
               
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">SORT BY</h3>
-                <div className="flex gap-2">
+                <h3 className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2">SORT BY</h3>
+                <div className="flex flex-wrap gap-1.5">
                   {[
-                    { label: 'NEWEST', value: 'DATE_NEW' },
-                    { label: 'OLDEST', value: 'DATE_OLD' },
+                    { label: 'NEW', value: 'DATE_NEW' },
+                    { label: 'OLD', value: 'DATE_OLD' },
                     { label: 'HIGH', value: 'AMOUNT_HIGH' },
                     { label: 'LOW', value: 'AMOUNT_LOW' },
                   ].map(opt => (
                     <button
                       key={opt.value}
                       onClick={() => setSortBy(opt.value as SortBy)}
-                      className={`px-3 py-1.5 text-xs font-bold uppercase border-2 transition-colors ${
+                      className={`px-2.5 py-1 text-[10px] font-bold uppercase border-2 transition-colors ${
                         sortBy === opt.value
                           ? 'bg-white text-black border-white'
                           : 'bg-white dark:bg-black border-gray-200 dark:border-gray-800 text-black dark:text-white'
@@ -256,18 +256,18 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="space-y-6">
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="space-y-4">
           {Object.entries(groupedTransactions).map(([dateKey, dayTransactions]) => (
             <div key={dateKey}>
-              <div className="flex items-center gap-3 mb-3 sticky top-20 z-10">
-                <span className="bg-gray-100 dark:bg-gray-800 text-black dark:text-white px-3 py-1 text-xs font-black uppercase tracking-wide">
+              <div className="flex items-center gap-2 mb-2 sticky top-20 z-10">
+                <span className="bg-gray-100 dark:bg-gray-800 text-black dark:text-white px-2 py-0.5 text-[10px] font-black uppercase tracking-wide">
                   {dateKey.toUpperCase()}
                 </span>
                 <div className="flex-1 h-px bg-gray-200 dark:bg-gray-800" />
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {dayTransactions.map((txn) => {
                   const categoryInfo = getCategoryInfo(txn.category || 'OTHER');
                   const isExpense = txn.type === TransactionType.PERSONAL;
@@ -276,50 +276,50 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
                     <div
                       key={txn.id}
                       onClick={() => setSelectedTransaction(txn)}
-                      className="bg-white dark:bg-black border-l-4 border-cyan-500 p-4 hover:bg-gray-50 dark:hover:bg-gray-900 hover:shadow-lg transition cursor-pointer"
+                      className="bg-white dark:bg-black border-l-4 border-cyan-500 p-3 hover:bg-gray-50 dark:hover:bg-gray-900 hover:shadow-lg transition cursor-pointer"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start gap-2 flex-1 min-w-0">
                           <div
-                            className="w-12 h-12 flex items-center justify-center text-xl"
+                            className="w-8 h-8 flex items-center justify-center text-sm flex-shrink-0"
                             style={{ backgroundColor: `${categoryInfo.color}20` }}
                           >
                             {categoryInfo.icon}
                           </div>
 
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-black text-black dark:text-white truncate">
+                            <h3 className="font-black text-sm text-black dark:text-white truncate">
                               {txn.source}
                             </h3>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <p className="text-xs text-gray-500 font-bold uppercase">
-                                {txn.category || 'UNCATEGORIZED'} • {txn.description || 'NO DESCRIPTION'}
+                            <div className="flex flex-wrap items-center gap-1 mt-0.5">
+                              <p className="text-[10px] text-gray-500 font-bold uppercase truncate">
+                                {txn.category || 'UNCATEGORIZED'}
                               </p>
                               {txn.type === TransactionType.BUSINESS && (
-                                <span className="text-[10px] bg-green-500 text-black px-2 py-0.5 font-black uppercase">
-                                  💵 TAXABLE
+                                <span className="text-[8px] bg-green-500 text-black px-1 py-0.5 font-black uppercase">
+                                  💵
                                 </span>
                               )}
                               {(txn.type === TransactionType.REFUND || (txn.type === TransactionType.PERSONAL && txn.amount > 0)) && (
-                                <span className="text-[10px] bg-red-500 text-white px-2 py-0.5 font-black uppercase">
-                                  🚫 NON-TAXABLE
+                                <span className="text-[8px] bg-red-500 text-white px-1 py-0.5 font-black uppercase">
+                                  🚫
                                 </span>
                               )}
                             </div>
                           </div>
                         </div>
 
-                        <div className="text-right">
+                        <div className="text-right flex-shrink-0">
                           <p
-                            className={`text-lg font-black ${
+                            className={`text-sm font-black ${
                               isExpense ? 'text-black dark:text-white' : 'text-green-500 dark:text-green-400'
                             }`}
                           >
                             {isExpense ? '-' : '+'} {formatCurrency(txn.amount)}
                           </p>
                           {txn.status === TransactionStatus.VAULTED && (
-                            <span className="text-[10px] bg-green-500 text-black px-1.5 py-0.5 font-black uppercase">
-                              VAULTED
+                            <span className="text-[8px] bg-green-500 text-black px-1 py-0.5 font-black uppercase">
+                              VAULT
                             </span>
                           )}
                         </div>

@@ -30,48 +30,48 @@ export const Notifications: React.FC<NotificationsProps> = ({ notifications }) =
   return (
     <div className="min-h-screen pb-20 animate-fade-in-up">
       <div className="bg-white dark:bg-black border-b-2 border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Bell className="w-8 h-8 text-yellow-500 dark:text-yellow-400" />
-            <h1 className="text-3xl font-black uppercase text-black dark:text-white">NOTIFICATIONS</h1>
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Bell className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 dark:text-yellow-400" />
+            <h1 className="text-2xl sm:text-3xl font-black uppercase text-black dark:text-white">NOTIFICATIONS</h1>
           </div>
           <p className="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-500">
-            {unreadCount} UNREAD NOTIFICATIONS
+            {unreadCount} UNREAD
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white dark:bg-black border-l-4 border-gray-800 dark:border-white p-4 shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <div className="bg-white dark:bg-black border-l-4 border-gray-800 dark:border-white p-3 shadow-lg">
             <p className="text-xs font-bold uppercase text-gray-600 dark:text-gray-500 mb-1">TOTAL</p>
-            <p className="text-2xl font-black text-black dark:text-white">{notifications.length}</p>
+            <p className="text-xl sm:text-2xl font-black text-black dark:text-white">{notifications.length}</p>
           </div>
-          <div className="bg-white dark:bg-black border-l-4 border-green-500 p-4 shadow-lg">
+          <div className="bg-white dark:bg-black border-l-4 border-green-500 p-3 shadow-lg">
             <p className="text-xs font-bold uppercase text-gray-600 dark:text-gray-500 mb-1">SUCCESS</p>
-            <p className="text-2xl font-black text-green-600 dark:text-green-400">{successCount}</p>
+            <p className="text-xl sm:text-2xl font-black text-green-600 dark:text-green-400">{successCount}</p>
           </div>
-          <div className="bg-white dark:bg-black border-l-4 border-yellow-400 p-4 shadow-lg">
+          <div className="bg-white dark:bg-black border-l-4 border-yellow-400 p-3 shadow-lg">
             <p className="text-xs font-bold uppercase text-gray-600 dark:text-gray-500 mb-1">WARNINGS</p>
-            <p className="text-2xl font-black text-yellow-600 dark:text-yellow-400">{warningCount}</p>
+            <p className="text-xl sm:text-2xl font-black text-yellow-600 dark:text-yellow-400">{warningCount}</p>
           </div>
-          <div className="bg-white dark:bg-black border-l-4 border-cyan-500 p-4 shadow-lg">
+          <div className="bg-white dark:bg-black border-l-4 border-cyan-500 p-3 shadow-lg">
             <p className="text-xs font-bold uppercase text-gray-600 dark:text-gray-500 mb-1">INFO</p>
-            <p className="text-2xl font-black text-cyan-600 dark:text-cyan-400">{infoCount}</p>
+            <p className="text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400">{infoCount}</p>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-black border-2 border-gray-200 dark:border-gray-800 p-4 mb-8 shadow-lg">
+        <div className="bg-white dark:bg-black border-2 border-gray-200 dark:border-gray-800 p-3 sm:p-4 mb-6 shadow-lg">
           <div className="flex items-center gap-2 mb-3">
-            <Filter className="w-5 h-5 text-black dark:text-white" />
-            <span className="font-black uppercase text-black dark:text-white text-sm">FILTER BY TYPE</span>
+            <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-black dark:text-white" />
+            <span className="font-black uppercase text-black dark:text-white text-xs sm:text-sm">FILTER</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {['ALL', 'success', 'warning', 'info'].map(type => (
               <button
                 key={type}
                 onClick={() => setFilter(type as any)}
-                className={`px-4 py-2 font-bold uppercase text-xs transition ${
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 font-bold uppercase text-xs transition whitespace-nowrap ${
                   filter === type
                     ? 'bg-yellow-400 text-black'
                     : 'bg-gray-100 dark:bg-gray-900 text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800 border-2 border-gray-300 dark:border-gray-800'

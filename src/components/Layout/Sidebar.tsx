@@ -53,9 +53,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ view, setView, handleLogout })
       <aside className={`w-64 bg-white dark:bg-black border-r-4 border-yellow-400 flex flex-col fixed h-full transition-transform duration-300 ${
         isMobileOpen ? 'translate-x-0 z-40' : '-translate-x-full md:translate-x-0 z-40'
       }`}>
-        <div className="p-6 pl-16 md:pl-6 flex items-center gap-3 border-b-2 border-gray-200 dark:border-gray-800">
-          <ShieldCheck className="text-yellow-500 dark:text-yellow-400" size={28} />
-          <span className="text-xl font-black uppercase text-black dark:text-white tracking-tight">PAYLOCKR</span>
+        <div className="py-5 pr-4 pl-16 md:pl-6 flex items-center gap-2.5 border-b-2 border-gray-200 dark:border-gray-800">
+          <ShieldCheck className="text-yellow-500 dark:text-yellow-400" size={26} />
+          <span className="text-xl md:text-2xl font-black uppercase text-black dark:text-white tracking-tight">PAYLOCKR</span>
         </div>
       
       <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">

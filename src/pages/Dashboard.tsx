@@ -104,17 +104,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
   return (
     <>
       <div className={`${isDarkMode ? 'bg-black border-b-2 border-gray-800' : 'bg-white dark:bg-black border-b-2 border-gray-200 dark:border-gray-800'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pl-16 md:pl-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between gap-2 pl-16 md:pl-0">
             <div className="flex-1 min-w-0">
-              <h1 className={`text-2xl md:text-4xl font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'} truncate`}>
+              <h1 className={`text-xl sm:text-2xl md:text-4xl font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'} truncate`}>
                 {currentUser ? `${currentUser.name ? currentUser.name.split(' ')[0] : 'FREELANCER'}` : 'DASHBOARD'}
               </h1>
-              <div className="flex items-center gap-3 mt-2">
+              <div className="flex items-center gap-2 mt-2">
                 <span className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>
                   TAX HEALTH:
                 </span>
-                <span className={`text-xs font-bold uppercase px-3 py-1 ${taxHealth.color === (isDarkMode ? 'text-green-400' : 'text-green-600') ? 'bg-green-500 text-black' : taxHealth.color === (isDarkMode ? 'text-blue-400' : 'text-blue-600') ? 'bg-cyan-500 text-black' : 'bg-yellow-400 text-black'}`}>
+                <span className={`text-xs font-bold uppercase px-2 py-1 ${taxHealth.color === (isDarkMode ? 'text-green-400' : 'text-green-600') ? 'bg-green-500 text-black' : taxHealth.color === (isDarkMode ? 'text-blue-400' : 'text-blue-600') ? 'bg-cyan-500 text-black' : 'bg-yellow-400 text-black'}`}>
                   {taxHealth.status}
                 </span>
               </div>
@@ -124,9 +124,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <div className="relative" ref={notificationRef}>
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className={`relative p-3 border-2 ${isDarkMode ? 'border-gray-800 hover:border-yellow-400' : 'border-gray-300 hover:border-yellow-400'} transition-all`}
+                  className={`relative p-2 sm:p-3 border-2 ${isDarkMode ? 'border-gray-800 hover:border-yellow-400' : 'border-gray-300 hover:border-yellow-400'} transition-all`}
                 >
-                  <Bell className={`w-5 h-5 md:w-6 md:h-6 ${isDarkMode ? 'text-white' : 'text-black'}`} />
+                  <Bell className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-black'}`} />
                   {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 text-black text-xs font-black flex items-center justify-center">
                       {unreadCount}
@@ -221,10 +221,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
               <button
                 onClick={() => setCurrentView('HELP')}
-                className={`p-3 border-2 font-bold uppercase text-xs ${isDarkMode ? 'border-gray-800 hover:border-cyan-500 text-white' : 'border-gray-300 hover:border-cyan-500 text-black'} transition-all flex items-center gap-2`}
+                className={`p-2 sm:p-3 border-2 font-bold uppercase text-xs ${isDarkMode ? 'border-gray-800 hover:border-cyan-500 text-white' : 'border-gray-300 hover:border-cyan-500 text-black'} transition-all flex items-center gap-2`}
               >
                 <HelpCircle className="w-5 h-5" />
-                <span className="hidden md:inline">HELP</span>
+                <span className="hidden sm:inline">HELP</span>
               </button>
             </div>
           </div>

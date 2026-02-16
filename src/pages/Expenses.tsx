@@ -99,25 +99,25 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onAdd }) => {
     <div className="min-h-screen pb-20 animate-fade-in-up">
       {/* Header */}
       <div className="bg-white dark:bg-black border-b-2 border-gray-200 dark:border-gray-800 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           
           {/* Main Expense Card */}
-          <div className="bg-white dark:bg-black border-l-8 border-yellow-400 p-8">
-            <div className="flex items-center justify-between gap-3 mb-4">
-              <div className="flex items-center gap-3">
-                <Receipt className="w-8 h-8 text-yellow-400" />
-                <h2 className="text-3xl font-black uppercase text-black dark:text-white">EXPENSES</h2>
+          <div className="bg-white dark:bg-black border-l-4 sm:border-l-8 border-yellow-400 p-4 sm:p-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+              <div className="flex items-center gap-2">
+                <Receipt className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
+                <h2 className="text-2xl sm:text-3xl font-black uppercase text-black dark:text-white">EXPENSES</h2>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => setShowAddModal(true)}
-                  className="px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase transition flex items-center gap-2 justify-center"
+                  className="w-full px-4 py-2 sm:px-6 sm:py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase transition flex items-center gap-2 justify-center"
                 >
                   <span className="text-xl">+</span> ADD EXPENSE
                 </button>
                 <button
                   onClick={() => setShowBudgetModal(true)}
-                  className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold uppercase transition flex items-center gap-2 justify-center"
+                  className="w-full px-4 py-2 sm:px-6 sm:py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold uppercase transition flex items-center gap-2 justify-center"
                 >
                   EDIT BUDGET
                 </button>

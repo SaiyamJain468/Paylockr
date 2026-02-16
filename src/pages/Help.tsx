@@ -106,62 +106,62 @@ export const Help: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-20">
       {/* Header */}
-      <div className="bg-white dark:bg-black border-l-8 border-yellow-400 p-8 md:p-12 relative overflow-hidden shadow-lg">
+      <div className="bg-white dark:bg-black border-l-4 sm:border-l-8 border-yellow-400 p-4 sm:p-8 md:p-12 relative overflow-hidden shadow-lg">
         <div className="relative z-10 text-center">
-          <div className="w-16 h-16 bg-yellow-400 flex items-center justify-center mx-auto mb-4">
-            <HelpCircle className="w-8 h-8 text-black" />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-400 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+            <HelpCircle className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
           </div>
-          <h1 className="text-4xl font-black uppercase text-black dark:text-white mb-3">HOW CAN WE HELP YOU?</h1>
-          <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-6">FIND ANSWERS TO COMMON QUESTIONS ABOUT PAYLOCKR</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase text-black dark:text-white mb-2 sm:mb-3">HOW CAN WE HELP?</h1>
+          <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-4 sm:mb-6">FIND ANSWERS TO COMMON QUESTIONS</p>
           
           <div className="max-w-2xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input 
               type="text" 
-              placeholder="SEARCH FOR HELP TOPICS, FEATURES, OR QUESTIONS..." 
+              placeholder="SEARCH..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 focus:bg-white dark:focus:bg-black focus:border-cyan-500 outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 font-bold uppercase text-xs"
+              className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 focus:bg-white dark:focus:bg-black focus:border-cyan-500 outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 font-bold uppercase text-xs"
             />
           </div>
         </div>
       </div>
 
       {/* Contact Options */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-black border-l-4 border-cyan-500 p-6 hover:bg-gray-50 dark:hover:bg-gray-900 hover:shadow-lg transition cursor-pointer group">
-          <div className="w-12 h-12 bg-cyan-500 text-black flex items-center justify-center mb-4 group-hover:scale-110 transition">
-            <MessageCircle size={24} />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className="bg-white dark:bg-black border-l-4 border-cyan-500 p-4 sm:p-6 hover:bg-gray-50 dark:hover:bg-gray-900 hover:shadow-lg transition cursor-pointer group">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-cyan-500 text-black flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition">
+            <MessageCircle size={20} />
           </div>
-          <h3 className="font-black uppercase text-black dark:text-white mb-2">LIVE CHAT</h3>
-          <p className="text-xs font-bold uppercase text-gray-500 mb-3">CHAT WITH OUR SUPPORT TEAM</p>
-          <span className="text-xs font-bold uppercase text-cyan-400">AVAILABLE 9 AM - 6 PM IST</span>
+          <h3 className="font-black uppercase text-black dark:text-white mb-2 text-sm">LIVE CHAT</h3>
+          <p className="text-xs font-bold uppercase text-gray-500 mb-2 sm:mb-3">CHAT WITH SUPPORT</p>
+          <span className="text-xs font-bold uppercase text-cyan-400">9 AM - 6 PM IST</span>
         </div>
 
-        <div className="bg-white dark:bg-black border-l-4 border-green-500 p-6 hover:bg-gray-50 dark:hover:bg-gray-900 hover:shadow-lg transition cursor-pointer group">
-          <div className="w-12 h-12 bg-green-500 text-black flex items-center justify-center mb-4 group-hover:scale-110 transition">
-            <Mail size={24} />
+        <div className="bg-white dark:bg-black border-l-4 border-green-500 p-4 sm:p-6 hover:bg-gray-50 dark:hover:bg-gray-900 hover:shadow-lg transition cursor-pointer group">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500 text-black flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition">
+            <Mail size={20} />
           </div>
-          <h3 className="font-black uppercase text-black dark:text-white mb-2">EMAIL SUPPORT</h3>
-          <p className="text-xs font-bold uppercase text-gray-500 mb-3">saiyam468@gmail.com</p>
-          <span className="text-xs font-bold uppercase text-green-400">RESPONSE WITHIN 24 HOURS</span>
+          <h3 className="font-black uppercase text-black dark:text-white mb-2 text-sm">EMAIL</h3>
+          <p className="text-xs font-bold uppercase text-gray-500 mb-2 sm:mb-3">saiyam468@gmail.com</p>
+          <span className="text-xs font-bold uppercase text-green-400">24 HOURS</span>
         </div>
 
-        <div className="bg-white dark:bg-black border-l-4 border-yellow-400 p-6 hover:bg-gray-50 dark:hover:bg-gray-900 hover:shadow-lg transition cursor-pointer group">
-          <div className="w-12 h-12 bg-yellow-400 text-black flex items-center justify-center mb-4 group-hover:scale-110 transition">
-            <Shield size={24} />
+        <div className="bg-white dark:bg-black border-l-4 border-yellow-400 p-4 sm:p-6 hover:bg-gray-50 dark:hover:bg-gray-900 hover:shadow-lg transition cursor-pointer group">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-400 text-black flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition">
+            <Shield size={20} />
           </div>
-          <h3 className="font-black uppercase text-black dark:text-white mb-2">PRIORITY SUPPORT</h3>
-          <p className="text-xs font-bold uppercase text-gray-500 mb-3">FOR PREMIUM USERS</p>
-          <span className="text-xs font-bold uppercase text-yellow-400">INSTANT ASSISTANCE</span>
+          <h3 className="font-black uppercase text-black dark:text-white mb-2 text-sm">PRIORITY</h3>
+          <p className="text-xs font-bold uppercase text-gray-500 mb-2 sm:mb-3">PREMIUM USERS</p>
+          <span className="text-xs font-bold uppercase text-yellow-400">INSTANT</span>
         </div>
       </div>
 
       {/* Category Filter */}
-      <div className="bg-white dark:bg-black border-l-4 border-cyan-500 p-4 shadow-lg">
+      <div className="bg-white dark:bg-black border-l-4 border-cyan-500 p-3 sm:p-4 shadow-lg">
         <div className="flex items-center gap-2 mb-3">
-          <FileQuestion className="w-5 h-5 text-cyan-400" />
-          <h3 className="font-black uppercase text-black dark:text-white">BROWSE BY TOPIC</h3>
+          <FileQuestion className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
+          <h3 className="font-black uppercase text-black dark:text-white text-sm">BROWSE TOPICS</h3>
         </div>
         <div className="flex flex-wrap gap-2">
           {categories.map(cat => {
@@ -170,14 +170,15 @@ export const Help: React.FC = () => {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2 font-bold uppercase text-xs transition flex items-center gap-2 ${
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 font-bold uppercase text-xs transition flex items-center gap-1.5 sm:gap-2 whitespace-nowrap ${
                   selectedCategory === cat.id
                     ? 'bg-yellow-400 text-black'
                     : 'bg-gray-100 dark:bg-gray-900 text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800 border-2 border-gray-200 dark:border-gray-800'
                 }`}
               >
-                <Icon size={16} />
-                {cat.label}
+                <Icon size={14} />
+                <span className="hidden sm:inline">{cat.label}</span>
+                <span className="sm:hidden">{cat.id}</span>
               </button>
             );
           })}

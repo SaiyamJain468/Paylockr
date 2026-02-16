@@ -135,8 +135,8 @@ export function generateUserData(userId: string) {
       const paymentMethods = isInternational ? ['Wire Transfer', 'PayPal', 'Wise'] : ['NEFT', 'RTGS', 'UPI', 'IMPS'];
       const paymentMethod = getRandomItem(paymentMethods);
       
-      // Realistic Amounts: 25k to 1.2L per transaction
-      const baseAmount = getRandomAmount(25000, 120000); 
+      // Reduced income: 15k to 60k per transaction
+      const baseAmount = getRandomAmount(15000, 60000); 
       // Make amount look realistic (e.g. 45000 instead of 45123)
       const amount = Math.round(baseAmount / 500) * 500; 
       
@@ -227,7 +227,7 @@ export function generateUserData(userId: string) {
 
   // 2. Generate Expenses (Realistic Spending Patterns - More Data)
   let totalExpenseAmount = 0;
-  const numExpenses = getRandomAmount(80, 120); // 80-120 expenses over history (increased)
+  const numExpenses = getRandomAmount(150, 200); // 150-200 expenses over history (increased)
 
   for (let k = 0; k < numExpenses; k++) {
     const categoryKey = getRandomItem(Object.keys(MERCHANTS));
