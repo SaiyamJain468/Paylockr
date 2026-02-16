@@ -135,8 +135,8 @@ export function generateUserData(userId: string) {
       const paymentMethods = isInternational ? ['Wire Transfer', 'PayPal', 'Wise'] : ['NEFT', 'RTGS', 'UPI', 'IMPS'];
       const paymentMethod = getRandomItem(paymentMethods);
       
-      // Reduced income: 15k to 60k per transaction
-      const baseAmount = getRandomAmount(15000, 60000); 
+      // Realistic income: 25k to 80k per transaction
+      const baseAmount = getRandomAmount(25000, 80000); 
       // Make amount look realistic (e.g. 45000 instead of 45123)
       const amount = Math.round(baseAmount / 500) * 500; 
       
@@ -227,7 +227,7 @@ export function generateUserData(userId: string) {
 
   // 2. Generate Expenses (Realistic Spending Patterns - More Data)
   let totalExpenseAmount = 0;
-  const numExpenses = getRandomAmount(150, 200); // 150-200 expenses over history (increased)
+  const numExpenses = getRandomAmount(80, 120); // 80-120 expenses over history
 
   for (let k = 0; k < numExpenses; k++) {
     const categoryKey = getRandomItem(Object.keys(MERCHANTS));
@@ -239,11 +239,11 @@ export function generateUserData(userId: string) {
     const paymentMethods = ['UPI', 'Debit Card', 'Credit Card', 'Net Banking'];
     const paymentMethod = getRandomItem(paymentMethods);
 
-    let amount = getRandomAmount(200, 5000);
+    let amount = getRandomAmount(150, 3500);
     // Adjust amount based on category realism
-    if (categoryKey === 'SUBSCRIPTIONS') amount = getRandomAmount(800, 4500);
-    if (categoryKey === 'TRAVEL' && Math.random() > 0.8) amount = getRandomAmount(3000, 15000); // Flight
-    if (categoryKey === 'UTILITIES') amount = getRandomAmount(800, 2500);
+    if (categoryKey === 'SUBSCRIPTIONS') amount = getRandomAmount(500, 2500);
+    if (categoryKey === 'TRAVEL' && Math.random() > 0.8) amount = getRandomAmount(2000, 8000); // Flight
+    if (categoryKey === 'UTILITIES') amount = getRandomAmount(500, 1800);
 
     const expenseId = `EXP-${userId}-${k}`;
     const txnId = `TXN-EXP-${userId}-${k}`;

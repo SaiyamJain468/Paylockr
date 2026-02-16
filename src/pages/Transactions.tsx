@@ -18,7 +18,7 @@ interface TransactionsProps {
 export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], onAdd, onUpdate }) => {
   const [filterType, setFilterType] = useState<FilterType>('ALL');
   const [sortBy, setSortBy] = useState<SortBy>('DATE_NEW');
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>('LAST_3M');
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>('THIS_MONTH');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [amountRange, setAmountRange] = useState<[number, number]>([0, 1000000]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,6 +98,20 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
     return filtered;
   }, [transactions, filterType, selectedCategories, amountRange, searchTerm, timePeriod, sortBy]);
 
+  // Calculate summary stats
+  const summary = useMemo(() => {
+    const income = filteredTransactions
+      .filter(t => t.type === TransactionType.BUSINESS || t.type === TransactionType.REFUND)
+      .reduce((sum, t) => sum + t.amount, 0);
+    const expense = filteredTransactions
+      .filter(t => t.type === TransactionType.PERSONAL)
+      .reduce((sum, t) => sum + t.amount, 0);
+    const taxable = filteredTransactions
+      .filter(t => t.type === TransactionType.BUSINESS)
+      .reduce((sum, t) => sum + (t.estimatedTax || 0), 0);
+    return { income, expense, balance: income - expense, taxable };
+  }, [filteredTransactions]);
+
   const groupedTransactions = useMemo(() => {
     const grouped: Record<string, Transaction[]> = {};
 
@@ -145,6 +159,28 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
     <div className="min-h-screen pb-20 animate-fade-in-up">
       {modalOpen && <TransactionModal onClose={() => setModalOpen(false)} onSave={onAdd} />}
       
+      {/* Summary Card */}
+      <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 p-4 sm:p-6">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-xs font-bold uppercase text-black/70 mb-3">TOTAL BALANCE</h2>
+          <p className="text-3xl sm:text-4xl font-black text-black mb-4">{formatCurrency(summary.balance)}</p>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white/20 backdrop-blur-sm p-3 rounded">
+              <p className="text-[10px] font-bold uppercase text-black/70 mb-1">INCOME</p>
+              <p className="text-lg sm:text-xl font-black text-green-700">↑ {formatCurrency(summary.income)}</p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm p-3 rounded">
+              <p className="text-[10px] font-bold uppercase text-black/70 mb-1">EXPENSE</p>
+              <p className="text-lg sm:text-xl font-black text-red-700">↓ {formatCurrency(summary.expense)}</p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm p-3 rounded">
+              <p className="text-[10px] font-bold uppercase text-black/70 mb-1">TAX</p>
+              <p className="text-lg sm:text-xl font-black text-orange-700">₹ {formatCurrency(summary.taxable)}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white dark:bg-black border-b-2 border-gray-200 dark:border-gray-800 shadow-lg sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex flex-col gap-3">

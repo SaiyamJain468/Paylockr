@@ -39,6 +39,8 @@ export const SmartTaxVault: React.FC<SmartTaxVaultProps> = ({
 }) => {
   const [hideVaultBalance, setHideVaultBalance] = useState(false);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [unlockAmount, setUnlockAmount] = useState('');
+  const [unlockReason, setUnlockReason] = useState('');
 
   // Get dashboard data
   const dashboard = useMemo(
@@ -103,9 +105,12 @@ export const SmartTaxVault: React.FC<SmartTaxVaultProps> = ({
                   <p className="text-xs font-bold uppercase tracking-wider text-gray-500">AVAILABLE</p>
                 </div>
                 <p className="text-4xl font-black text-black dark:text-white">{formatCurrency(dashboard.availableForSpending)}</p>
-                <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mt-2">
-                  FOR SPENDING
-                </p>
+                <button
+                  onClick={() => setShowUnlockModal(true)}
+                  className="mt-2 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-[10px] font-bold uppercase transition flex items-center gap-1"
+                >
+                  <Unlock size={12} /> EMERGENCY UNLOCK
+                </button>
               </div>
 
               {/* Total Income */}
@@ -389,6 +394,87 @@ export const SmartTaxVault: React.FC<SmartTaxVaultProps> = ({
                     DENY REQUEST
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Emergency Unlock Modal */}
+        {showUnlockModal && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-black border-4 border-red-500 w-full max-w-md p-6 shadow-2xl">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black uppercase text-black dark:text-white flex items-center gap-2">
+                  <Unlock className="text-red-500" size={24} />
+                  EMERGENCY UNLOCK
+                </h3>
+                <button onClick={() => setShowUnlockModal(false)} className="text-gray-400 hover:text-white">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6">
+                <p className="text-xs font-bold uppercase text-red-600 dark:text-red-400 mb-2">⚠️ WARNING</p>
+                <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                  Unlocking vault money reduces your tax safety. You may face penalties if tax payment is insufficient.
+                </p>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-gray-500 mb-2">VAULT BALANCE</label>
+                  <p className="text-2xl font-black text-black dark:text-white">{formatCurrency(dashboard.vaultBalance)}</p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-gray-500 mb-2">UNLOCK AMOUNT</label>
+                  <input
+                    type="number"
+                    value={unlockAmount}
+                    onChange={(e) => setUnlockAmount(e.target.value)}
+                    placeholder="Enter amount"
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900 text-black dark:text-white font-bold focus:border-red-500 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-gray-500 mb-2">REASON (REQUIRED)</label>
+                  <textarea
+                    value={unlockReason}
+                    onChange={(e) => setUnlockReason(e.target.value)}
+                    placeholder="Medical emergency, urgent payment, etc."
+                    rows={3}
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900 text-black dark:text-white font-bold focus:border-red-500 outline-none resize-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    if (!unlockAmount || !unlockReason) {
+                      alert('Please enter amount and reason');
+                      return;
+                    }
+                    alert(`₹${unlockAmount} unlocked from vault. Reason: ${unlockReason}`);
+                    setShowUnlockModal(false);
+                    setUnlockAmount('');
+                    setUnlockReason('');
+                  }}
+                  className="flex-1 px-4 py-3 bg-red-500 text-white hover:bg-red-600 font-black uppercase transition"
+                >
+                  CONFIRM UNLOCK
+                </button>
+                <button
+                  onClick={() => {
+                    setShowUnlockModal(false);
+                    setUnlockAmount('');
+                    setUnlockReason('');
+                  }}
+                  className="flex-1 px-4 py-3 bg-gray-200 dark:bg-gray-800 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700 font-black uppercase transition"
+                >
+                  CANCEL
+                </button>
               </div>
             </div>
           </div>
