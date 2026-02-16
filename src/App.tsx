@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ViewState, Transaction, Notification, TaxSettings, TaxDeadline, Invoice, Expense, VaultEntry, BankAccount, VaultDocument } from './types';
-import { INITIAL_NOTIFICATIONS, MOCK_TAX_DEADLINES } from './constants';
+import { MOCK_TAX_DEADLINES, generateNotifications } from './constants';
 import { getUserData, getDashboardStats, ClassifiedIncome } from './utils/multiUserUnifiedData';
 import { CheckCircle, AlertTriangle, Info, X } from 'lucide-react';
 
@@ -76,7 +76,7 @@ export default function App() {
     stats: any;
   } | null>(null);
 
-  const [notifications, setNotifications] = useState<Notification[]>(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [settings, setSettings] = useState<TaxSettings>({ 
     regime: 'New', 
@@ -114,6 +114,9 @@ export default function App() {
           vaultDocuments: data.vaultDocuments,
           stats: stats
         });
+        
+        // Generate notifications based on actual transactions
+        setNotifications(generateNotifications(data.transactions));
       } catch (e) {
         console.error("Failed to load user data", e);
       }
@@ -190,6 +193,9 @@ export default function App() {
           vaultDocuments: data.vaultDocuments,
           stats: stats
         });
+        
+        // Generate notifications based on actual transactions
+        setNotifications(generateNotifications(data.transactions));
 
         setView('DASHBOARD');
         setToast({ msg: `Welcome back, ${user.name}!`, type: 'success' });

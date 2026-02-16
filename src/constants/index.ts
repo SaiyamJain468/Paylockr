@@ -140,32 +140,51 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
   }
 ];
 
-export const INITIAL_NOTIFICATIONS: Notification[] = [
-  {
-    id: 'NOT-1',
-    title: 'New Income Detected',
-    message: 'Received ₹8,200 from YouTube Earnings.',
-    timestamp: '2 hours ago',
-    type: 'info',
-    read: false
-  },
-  {
-    id: 'NOT-2',
-    title: 'Vault Updated',
-    message: '₹1,250 moved to TaxVault successfully.',
-    timestamp: '1 day ago',
-    type: 'success',
-    read: false
-  },
-  {
-    id: 'NOT-3',
-    title: 'Tax Rule Update',
-    message: 'New slab rates applicable from next fiscal quarter.',
-    timestamp: '2 days ago',
+export const INITIAL_NOTIFICATIONS: Notification[] = [];
+
+// Generate notifications dynamically based on recent transactions
+export function generateNotifications(transactions: Transaction[]): Notification[] {
+  const notifications: Notification[] = [];
+  const recentTransactions = transactions.slice(0, 5);
+  
+  recentTransactions.forEach((txn, idx) => {
+    if (txn.type === TransactionType.BUSINESS) {
+      // Money credited notification
+      notifications.push({
+        id: `NOT-CREDIT-${txn.id}`,
+        title: 'Money Credited',
+        message: `Received ₹${txn.amount.toLocaleString()} from ${txn.source}`,
+        timestamp: new Date(txn.date).toISOString(),
+        type: 'success',
+        read: idx > 2
+      });
+      
+      // Tax vaulted notification
+      if (txn.estimatedTax > 0) {
+        notifications.push({
+          id: `NOT-VAULT-${txn.id}`,
+          title: 'Tax Vaulted',
+          message: `₹${txn.estimatedTax.toLocaleString()} automatically moved to Tax Vault (10% of ₹${txn.amount.toLocaleString()})`,
+          timestamp: new Date(txn.date).toISOString(),
+          type: 'info',
+          read: idx > 2
+        });
+      }
+    }
+  });
+  
+  // Add tax deadline notification
+  notifications.push({
+    id: 'NOT-DEADLINE-Q3',
+    title: 'Upcoming Tax Deadline',
+    message: 'Advance Tax Q3 due on Dec 15, 2024 - ₹90,000 required',
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     type: 'warning',
     read: false
-  }
-];
+  });
+  
+  return notifications.slice(0, 8); // Limit to 8 notifications
+}
 
 export const CHART_DATA: ChartDataPoint[] = [
   { name: 'Jun', income: 45000, tax: 4500 },

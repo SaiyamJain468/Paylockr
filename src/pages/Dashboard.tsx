@@ -137,9 +137,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </button>
 
                 {showNotifications && (
-                  <div className={`absolute right-0 mt-2 w-[calc(100vw-2rem)] md:w-96 ${
+                  <div className={`fixed md:absolute right-4 md:right-0 top-16 md:top-auto md:mt-2 w-[calc(100vw-2rem)] md:w-96 ${
                     isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'
-                  } border-2 rounded-xl shadow-2xl max-h-[32rem] overflow-hidden flex flex-col z-50`}>
+                  } border-2 rounded-xl shadow-2xl max-h-[32rem] overflow-hidden flex flex-col z-[100]`}>
                     <div className={`p-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>
                       <div className="flex items-center justify-between">
                         <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -165,7 +165,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           </p>
                         </div>
                       ) : (
-                        notifications.map(notification => (
+                        notifications.map(notification => {
+                          const handleNotificationClick = () => {
+                            markNotificationAsRead(notification.id);
+                            if (notification.title.includes('Money Credited') || notification.title.includes('Money Debited') || notification.title.includes('Tax Vaulted')) {
+                              setCurrentView('TRANSACTIONS');
+                            } else if (notification.title.includes('Tax Deadline') || notification.title.includes('GST Filing') || notification.title.includes('TDS')) {
+                              setCurrentView('TAX_CALENDAR');
+                            }
+                          };
+                          
+                          return (
                           <div
                             key={notification.id}
                             className={`p-4 border-b ${
@@ -175,7 +185,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                                 ? isDarkMode ? 'bg-slate-700/50' : 'bg-blue-50' 
                                 : ''
                             } hover:${isDarkMode ? 'bg-slate-700' : 'bg-gray-50'} transition-colors cursor-pointer`}
-                            onClick={() => markNotificationAsRead(notification.id)}
+                            onClick={handleNotificationClick}
                           >
                             <div className="flex items-start gap-3">
                               {getNotificationIcon(notification.type)}
@@ -203,7 +213,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                               </div>
                             </div>
                           </div>
-                        ))
+                        );
+                        })
                       )}
                     </div>
                   </div>
