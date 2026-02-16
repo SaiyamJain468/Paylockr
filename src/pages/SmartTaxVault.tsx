@@ -63,6 +63,15 @@ export const SmartTaxVault: React.FC<SmartTaxVaultProps> = ({
 
           {/* Main Vault Display */}
           <div className="bg-white dark:bg-black border-l-8 border-yellow-400 p-8 mb-8 shadow-lg">
+            <div className="flex justify-between items-start mb-6">
+              <h2 className="text-lg font-black uppercase text-gray-500">VAULT OVERVIEW</h2>
+              <button
+                onClick={() => setShowUnlockModal(true)}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-bold uppercase transition flex items-center gap-2"
+              >
+                <Unlock size={16} /> EMERGENCY UNLOCK
+              </button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Vault Balance */}
               <div>
@@ -105,12 +114,9 @@ export const SmartTaxVault: React.FC<SmartTaxVaultProps> = ({
                   <p className="text-xs font-bold uppercase tracking-wider text-gray-500">AVAILABLE</p>
                 </div>
                 <p className="text-4xl font-black text-black dark:text-white">{formatCurrency(dashboard.availableForSpending)}</p>
-                <button
-                  onClick={() => setShowUnlockModal(true)}
-                  className="mt-2 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-[10px] font-bold uppercase transition flex items-center gap-1"
-                >
-                  <Unlock size={12} /> EMERGENCY UNLOCK
-                </button>
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mt-2">
+                  FOR SPENDING
+                </p>
               </div>
 
               {/* Total Income */}
