@@ -15,6 +15,7 @@ import { SignUp } from './components/Auth/SignUp';
 
 // UI Components
 import { Button } from './components/common/Button';
+import { ThemeToggle } from './components/common/ThemeToggle';
 
 // Pages
 import { Dashboard } from './pages/Dashboard';
@@ -277,7 +278,7 @@ export default function App() {
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-neutral-950' : 'bg-gray-100'}`}>
       {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
-      
+      <ThemeToggle isDark={isDarkMode} onToggle={() => setIsDarkMode(!isDarkMode)} />
       <Sidebar view={view} setView={setView} handleLogout={handleLogout} />
 
       <main className="md:ml-64 min-h-screen">
