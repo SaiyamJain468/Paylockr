@@ -116,21 +116,24 @@ export function generateUserData(userId: string) {
 
   const today = new Date();
   
-  // 1. Generate Historical Income (Last 6 Months)
+  // 1. Generate Historical Income (Last 12 Months - More Data)
   // Freelancers have irregular income. We simulate this.
   let totalIncomeAmount = 0;
   
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 12; i++) {
     const monthDate = new Date(today);
-    monthDate.setMonth(today.getMonth() - i);
+    monthDate.setMonth(today.getMonth() - i - 1); // Ensure past months
     monthDate.setDate(getRandomAmount(1, 28)); // Random day
 
-    // 1-3 Major payments per month
-    const numPayments = getRandomAmount(1, 3);
+    // 2-5 Major payments per month (increased)
+    const numPayments = getRandomAmount(2, 5);
     
     for (let j = 0; j < numPayments; j++) {
       const isInternational = Math.random() > 0.7;
       const client = getRandomItem(CLIENTS);
+      const receivingBank = Math.random() > 0.5 ? 'HDFC Bank - Savings' : 'ICICI Bank - Current';
+      const paymentMethods = isInternational ? ['Wire Transfer', 'PayPal', 'Wise'] : ['NEFT', 'RTGS', 'UPI', 'IMPS'];
+      const paymentMethod = getRandomItem(paymentMethods);
       
       // Realistic Amounts: 25k to 1.2L per transaction
       const baseAmount = getRandomAmount(25000, 120000); 
@@ -156,9 +159,9 @@ export function generateUserData(userId: string) {
         date: txnDate,
         time: `${getRandomAmount(9, 18)}:${getRandomAmount(10, 59)}`,
         fromAccount: client.name,
-        toAccount: 'HDFC Bank - Savings',
+        toAccount: receivingBank,
         status: TransactionStatus.VAULTED,
-        paymentMethod: isInternational ? 'Wire Transfer' : 'NEFT',
+        paymentMethod: paymentMethod,
         referenceId: `REF-${Math.random().toString(36).substring(7).toUpperCase()}`,
         estimatedTax: estimatedTax,
         icon: '💻'
@@ -222,15 +225,19 @@ export function generateUserData(userId: string) {
     }
   }
 
-  // 2. Generate Expenses (Realistic Spending Patterns)
+  // 2. Generate Expenses (Realistic Spending Patterns - More Data)
   let totalExpenseAmount = 0;
-  const numExpenses = getRandomAmount(30, 50); // 30-50 expenses over history
+  const numExpenses = getRandomAmount(80, 120); // 80-120 expenses over history (increased)
 
   for (let k = 0; k < numExpenses; k++) {
     const categoryKey = getRandomItem(Object.keys(MERCHANTS));
     const merchant = getRandomItem(MERCHANTS[categoryKey as keyof typeof MERCHANTS]);
     const txnDate = new Date(today);
-    txnDate.setDate(txnDate.getDate() - getRandomAmount(1, 90)); // Last 3 months mainly
+    txnDate.setDate(txnDate.getDate() - getRandomAmount(1, 180)); // Last 6 months (increased)
+
+    const payingBank = Math.random() > 0.3 ? 'HDFC Bank - Savings' : 'ICICI Bank - Current';
+    const paymentMethods = ['UPI', 'Debit Card', 'Credit Card', 'Net Banking'];
+    const paymentMethod = getRandomItem(paymentMethods);
 
     let amount = getRandomAmount(200, 5000);
     // Adjust amount based on category realism
@@ -252,10 +259,10 @@ export function generateUserData(userId: string) {
       source: merchant,
       date: txnDate,
       time: `${getRandomAmount(8, 22)}:${getRandomAmount(10, 59)}`,
-      fromAccount: 'HDFC Bank - Savings',
+      fromAccount: payingBank,
       toAccount: merchant,
       status: TransactionStatus.COMPLETED,
-      paymentMethod: 'UPI',
+      paymentMethod: paymentMethod,
       referenceId: `UPI/${Math.random().toString(36).substring(7)}`,
       expenseId: expenseId,
       estimatedTax: 0,

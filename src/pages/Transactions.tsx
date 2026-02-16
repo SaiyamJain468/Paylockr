@@ -18,7 +18,7 @@ interface TransactionsProps {
 export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], onAdd, onUpdate }) => {
   const [filterType, setFilterType] = useState<FilterType>('ALL');
   const [sortBy, setSortBy] = useState<SortBy>('DATE_NEW');
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>('THIS_MONTH');
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>('LAST_3M');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [amountRange, setAmountRange] = useState<[number, number]>([0, 1000000]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -185,6 +185,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
                 <option value="THIS_WEEK">THIS WEEK</option>
                 <option value="THIS_MONTH">THIS MONTH</option>
                 <option value="LAST_3M">LAST 3M</option>
+                <option value="CUSTOM">ALL TIME</option>
               </select>
 
               <button

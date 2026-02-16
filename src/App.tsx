@@ -334,8 +334,10 @@ export default function App() {
           }} />}
           {view === 'INSIGHTS' && <Insights transactions={transactions} />}
           {view === 'NOTIFICATIONS' && <Notifications notifications={notifications} />}
-          {view === 'SETTINGS' && <Settings settings={settings} setSettings={setSettings} isDark={isDarkMode} toggleTheme={() => setIsDarkMode(!isDarkMode)} />}
-          {view === 'INVOICES' && <Invoices invoices={invoices} onAdd={(inv) => {
+          {view === 'SETTINGS' && <Settings settings={settings} setSettings={setSettings} isDark={isDarkMode} toggleTheme={() => setIsDarkMode(!isDarkMode)} onLogout={handleLogout} />}
+          {view === 'INVOICES' && <Invoices invoices={invoices} onShowToast={(msg, type) => setToast({ msg, type })} onDelete={(invId) => {
+            setFinancialData(prev => prev ? ({...prev, invoices: prev.invoices.filter(i => i.id !== invId)}) : null);
+          }} onAdd={(inv) => {
             setFinancialData(prev => prev ? ({...prev, invoices: [inv, ...prev.invoices]}) : null);
             const transaction = {
               id: `txn-${inv.id}`,

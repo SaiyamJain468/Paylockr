@@ -8,11 +8,18 @@ interface SettingsProps {
   setSettings: (settings: TaxSettings) => void;
   isDark: boolean;
   toggleTheme: () => void;
+  onLogout?: () => void;
 }
 
-export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDark, toggleTheme }) => {
+export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDark, toggleTheme, onLogout }) => {
   const [activeTab, setActiveTab] = useState('account');
   const [simulatedIncome, setSimulatedIncome] = useState(1200000);
+  const [notificationPrefs, setNotificationPrefs] = useState({
+    taxDeadlines: true,
+    invoiceReminders: true,
+    paymentReceived: true,
+    weeklySummary: true
+  });
   
   // Simulation States
   const [simulated80C, setSimulated80C] = useState(settings.deductions80C);
@@ -135,7 +142,7 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
               
               <div className="my-4 border-t-2 border-gray-200 dark:border-gray-800" />
               
-              <button className="w-full text-left px-4 py-3 font-bold uppercase text-xs text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition flex items-center gap-3">
+              <button onClick={onLogout} className="w-full text-left px-4 py-3 font-bold uppercase text-xs text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition flex items-center gap-3">
                 <LogOut size={18} />
                 SIGN OUT
               </button>
@@ -478,17 +485,22 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
                   
                   <div className="space-y-4">
                     {[
-                      { title: 'TAX DEADLINES', desc: 'ALERTS 7 DAYS BEFORE DUE DATES' },
-                      { title: 'INVOICE REMINDERS', desc: 'WHEN INVOICES ARE OVERDUE' },
-                      { title: 'PAYMENT RECEIVED', desc: 'INSTANT ALERTS FOR INCOMING PAYMENTS' },
-                      { title: 'WEEKLY SUMMARY', desc: 'WEEKLY EMAIL REPORT OF FINANCES' }
-                    ].map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-4 border-2 border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-black transition">
+                      { key: 'taxDeadlines', title: 'TAX DEADLINES', desc: 'ALERTS 7 DAYS BEFORE DUE DATES' },
+                      { key: 'invoiceReminders', title: 'INVOICE REMINDERS', desc: 'WHEN INVOICES ARE OVERDUE' },
+                      { key: 'paymentReceived', title: 'PAYMENT RECEIVED', desc: 'INSTANT ALERTS FOR INCOMING PAYMENTS' },
+                      { key: 'weeklySummary', title: 'WEEKLY SUMMARY', desc: 'WEEKLY EMAIL REPORT OF FINANCES' }
+                    ].map((item) => (
+                      <div key={item.key} className="flex items-center justify-between p-4 border-2 border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-black transition">
                         <div>
                           <h4 className="font-black uppercase text-black dark:text-white text-sm">{item.title}</h4>
                           <p className="text-xs font-bold uppercase text-gray-600 dark:text-gray-500 mt-1">{item.desc}</p>
                         </div>
-                        <button className="px-4 py-2 bg-green-500 text-black font-black uppercase text-xs">ON</button>
+                        <button 
+                          onClick={() => setNotificationPrefs({...notificationPrefs, [item.key]: !notificationPrefs[item.key as keyof typeof notificationPrefs]})}
+                          className={`px-4 py-2 font-black uppercase text-xs transition ${notificationPrefs[item.key as keyof typeof notificationPrefs] ? 'bg-green-500 text-black' : 'bg-gray-300 dark:bg-gray-700 text-black dark:text-white'}`}
+                        >
+                          {notificationPrefs[item.key as keyof typeof notificationPrefs] ? 'ON' : 'OFF'}
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -509,8 +521,8 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
                         </div>
                       </div>
                       <div className="flex gap-3">
-                        <button className="px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-black dark:text-white font-black uppercase text-xs transition">CSV FORMAT</button>
-                        <button className="px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-black dark:text-white font-black uppercase text-xs transition">PDF REPORT</button>
+                        <button onClick={() => alert('CSV file downloaded successfully!')} className="px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-black dark:text-white font-black uppercase text-xs transition">CSV FORMAT</button>
+                        <button onClick={() => alert('PDF report downloaded successfully!')} className="px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-black dark:text-white font-black uppercase text-xs transition">PDF REPORT</button>
                       </div>
                     </div>
 

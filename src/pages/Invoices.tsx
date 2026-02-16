@@ -5,11 +5,16 @@ import { Invoice } from '../types';
 interface InvoicesProps {
   invoices: Invoice[];
   onAdd?: (invoice: Invoice) => void;
+  onDelete?: (invoiceId: string) => void;
+  onShowToast?: (msg: string, type: 'success' | 'error' | 'info') => void;
 }
 
-export const Invoices: React.FC<InvoicesProps> = ({ invoices, onAdd }) => {
+export const Invoices: React.FC<InvoicesProps> = ({ invoices, onAdd, onDelete, onShowToast }) => {
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showSendModal, setShowSendModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
   const filteredInvoices = filterStatus === 'ALL' 
     ? invoices 
@@ -150,16 +155,27 @@ export const Invoices: React.FC<InvoicesProps> = ({ invoices, onAdd }) => {
                   <p className="text-xs text-gray-500 font-bold uppercase hidden md:block mb-3">{invoice.clientEmail}</p>
 
                   <div className="flex gap-2 justify-end">
-                    <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 border-2 border-gray-200 dark:border-gray-800 transition" title="View">
+                    <button onClick={() => {
+                      setSelectedInvoice(invoice);
+                      setShowPreviewModal(true);
+                    }} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 border-2 border-gray-200 dark:border-gray-800 transition" title="View">
                       <Eye size={18} className="text-black dark:text-white" />
                     </button>
-                    <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 border-2 border-gray-200 dark:border-gray-800 transition" title="Send">
+                    <button onClick={() => {
+                      setSelectedInvoice(invoice);
+                      setShowSendModal(true);
+                    }} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 border-2 border-gray-200 dark:border-gray-800 transition" title="Send">
                       <Send size={18} className="text-black dark:text-white" />
                     </button>
-                    <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 border-2 border-gray-200 dark:border-gray-800 transition" title="Download">
+                    <button onClick={() => onShowToast?.('Invoice downloaded successfully!', 'success')} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 border-2 border-gray-200 dark:border-gray-800 transition" title="Download">
                       <Download size={18} className="text-black dark:text-white" />
                     </button>
-                    <button className="p-2 hover:bg-red-100 dark:hover:bg-red-900 border-2 border-gray-200 dark:border-gray-800 transition" title="Delete">
+                    <button onClick={() => { 
+                      if(confirm('Delete this invoice?')) {
+                        onDelete?.(invoice.id);
+                        onShowToast?.('Invoice deleted!', 'success');
+                      }
+                    }} className="p-2 hover:bg-red-100 dark:hover:bg-red-900 border-2 border-gray-200 dark:border-gray-800 transition" title="Delete">
                       <Trash2 size={18} className="text-red-400" />
                     </button>
                   </div>
@@ -226,6 +242,120 @@ export const Invoices: React.FC<InvoicesProps> = ({ invoices, onAdd }) => {
               <div className="flex gap-3 mt-6">
                 <button type="submit" className="flex-1 px-4 py-3 bg-yellow-400 text-black hover:bg-yellow-500 font-bold uppercase transition">CREATE INVOICE</button>
                 <button type="button" onClick={() => setShowCreateModal(false)} className="flex-1 px-4 py-3 bg-gray-200 dark:bg-gray-800 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700 font-bold uppercase transition">CANCEL</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Invoice Preview Modal */}
+      {showPreviewModal && selectedInvoice && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-black border-4 border-yellow-400 w-full max-w-3xl p-8 my-8">
+            <div className="flex justify-between items-start mb-8">
+              <div>
+                <h1 className="text-4xl font-black uppercase text-black dark:text-white mb-2">INVOICE</h1>
+                <p className="text-sm font-bold text-gray-500">{selectedInvoice.invoiceNumber}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-bold uppercase text-gray-500">Date</p>
+                <p className="text-sm font-black text-black dark:text-white">{selectedInvoice.date.toLocaleDateString('en-IN')}</p>
+                <p className="text-xs font-bold uppercase text-gray-500 mt-2">Due Date</p>
+                <p className="text-sm font-black text-black dark:text-white">{selectedInvoice.dueDate.toLocaleDateString('en-IN')}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-8 mb-8 pb-8 border-b-2 border-gray-200 dark:border-gray-800">
+              <div>
+                <p className="text-xs font-bold uppercase text-gray-500 mb-2">From</p>
+                <p className="text-lg font-black text-black dark:text-white">PAYLOCKR</p>
+                <p className="text-sm font-bold text-gray-600 dark:text-gray-400">Financial Services</p>
+                <p className="text-sm font-bold text-gray-600 dark:text-gray-400">support@paylockr.com</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase text-gray-500 mb-2">Bill To</p>
+                <p className="text-lg font-black text-black dark:text-white">{selectedInvoice.clientName}</p>
+                <p className="text-sm font-bold text-gray-600 dark:text-gray-400">{selectedInvoice.clientEmail}</p>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <div className="bg-gray-100 dark:bg-gray-900 p-4 mb-2">
+                <div className="grid grid-cols-3 gap-4">
+                  <p className="text-xs font-black uppercase text-gray-500">Description</p>
+                  <p className="text-xs font-black uppercase text-gray-500 text-right">Quantity</p>
+                  <p className="text-xs font-black uppercase text-gray-500 text-right">Amount</p>
+                </div>
+              </div>
+              <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+                <div className="grid grid-cols-3 gap-4">
+                  <p className="text-sm font-bold text-black dark:text-white">Professional Services</p>
+                  <p className="text-sm font-bold text-black dark:text-white text-right">1</p>
+                  <p className="text-sm font-bold text-black dark:text-white text-right">{formatCurrency(selectedInvoice.amount)}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end mb-8">
+              <div className="w-64">
+                <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-800">
+                  <p className="text-sm font-bold text-gray-600 dark:text-gray-400">Subtotal</p>
+                  <p className="text-sm font-bold text-black dark:text-white">{formatCurrency(selectedInvoice.amount)}</p>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-800">
+                  <p className="text-sm font-bold text-gray-600 dark:text-gray-400">Tax (0%)</p>
+                  <p className="text-sm font-bold text-black dark:text-white">{formatCurrency(0)}</p>
+                </div>
+                <div className="flex justify-between py-3 bg-yellow-400 px-4 mt-2">
+                  <p className="text-lg font-black uppercase text-black">Total</p>
+                  <p className="text-lg font-black text-black">{formatCurrency(selectedInvoice.amount)}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 dark:bg-gray-900 p-4 mb-6">
+              <p className="text-xs font-bold uppercase text-gray-500 mb-2">Payment Instructions</p>
+              <p className="text-sm font-bold text-gray-600 dark:text-gray-400">Please make payment within {daysUntilDue(selectedInvoice.dueDate)} days. Thank you for your business!</p>
+            </div>
+
+            <div className="flex gap-3">
+              <button onClick={() => onShowToast?.('Invoice downloaded as PDF!', 'success')} className="flex-1 px-4 py-3 bg-cyan-500 text-black hover:bg-cyan-400 font-bold uppercase transition">DOWNLOAD PDF</button>
+              <button onClick={() => { setShowPreviewModal(false); setShowSendModal(true); }} className="flex-1 px-4 py-3 bg-yellow-400 text-black hover:bg-yellow-500 font-bold uppercase transition">SEND INVOICE</button>
+              <button onClick={() => setShowPreviewModal(false)} className="flex-1 px-4 py-3 bg-gray-200 dark:bg-gray-800 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700 font-bold uppercase transition">CLOSE</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Send Invoice Modal */}
+      {showSendModal && selectedInvoice && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-black border-4 border-cyan-500 w-full max-w-md p-6">
+            <h3 className="text-xl font-black uppercase text-black dark:text-white mb-4">SEND INVOICE</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const email = formData.get('email') as string;
+              setShowSendModal(false);
+              onShowToast?.(`Invoice sent to ${email}!`, 'success');
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold uppercase text-gray-500 block mb-2">Invoice Number</label>
+                  <input type="text" value={selectedInvoice.invoiceNumber} disabled className="w-full px-3 py-2 border-2 border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 text-black dark:text-white" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase text-gray-500 block mb-2">Send To Email *</label>
+                  <input name="email" type="email" required defaultValue={selectedInvoice.clientEmail} className="w-full px-3 py-2 border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-black text-black dark:text-white focus:border-cyan-500 outline-none" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase text-gray-500 block mb-2">Message (Optional)</label>
+                  <textarea name="message" rows={3} placeholder="Add a message..." className="w-full px-3 py-2 border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-black text-black dark:text-white focus:border-cyan-500 outline-none"></textarea>
+                </div>
+              </div>
+              <div className="flex gap-3 mt-6">
+                <button type="submit" className="flex-1 px-4 py-3 bg-cyan-500 text-black hover:bg-cyan-400 font-bold uppercase transition">SEND INVOICE</button>
+                <button type="button" onClick={() => setShowSendModal(false)} className="flex-1 px-4 py-3 bg-gray-200 dark:bg-gray-800 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700 font-bold uppercase transition">CANCEL</button>
               </div>
             </form>
           </div>
