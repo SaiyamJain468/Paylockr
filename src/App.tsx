@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ViewState, Transaction, Notification, TaxSettings, TaxDeadline, Invoice, Expense, VaultEntry, BankAccount, VaultDocument } from './types';
 import { MOCK_TAX_DEADLINES, generateNotifications } from './constants';
 import { getUserData, getDashboardStats, ClassifiedIncome } from './utils/multiUserUnifiedData';
+import { FIXED_TRANSACTIONS, FIXED_EXPENSES, FIXED_INVOICES, FIXED_VAULT_ENTRIES, FIXED_BANK_ACCOUNTS, FIXED_VAULT_DOCUMENTS, FIXED_STATS } from './utils/fixedDummyData';
 import { CheckCircle, AlertTriangle, Info, X } from 'lucide-react';
 
 // Layout
@@ -99,24 +100,20 @@ export default function App() {
     const loadUserData = (user: any) => {
       if (!user) return;
       try {
-        // --- LOAD UNIFIED DATA ONCE ---
-        const userId = user.id || 'saiyam';
-        const data = getUserData(userId);
-        const stats = getDashboardStats(userId);
-        
+        // --- USE FIXED DATA INSTEAD OF RANDOM ---
         setFinancialData({
-          transactions: data.transactions,
-          expenses: data.expenses,
-          invoices: data.invoices,
-          vaultEntries: data.vaultEntries,
-          classifiedIncomes: data.classifiedIncomes,
-          bankAccounts: data.bankAccounts,
-          vaultDocuments: data.vaultDocuments,
-          stats: stats
+          transactions: FIXED_TRANSACTIONS,
+          expenses: FIXED_EXPENSES,
+          invoices: FIXED_INVOICES,
+          vaultEntries: FIXED_VAULT_ENTRIES,
+          classifiedIncomes: [],
+          bankAccounts: FIXED_BANK_ACCOUNTS,
+          vaultDocuments: FIXED_VAULT_DOCUMENTS,
+          stats: FIXED_STATS
         });
         
         // Generate notifications based on actual transactions
-        setNotifications(generateNotifications(data.transactions));
+        setNotifications(generateNotifications(FIXED_TRANSACTIONS));
       } catch (e) {
         console.error("Failed to load user data", e);
       }
@@ -179,23 +176,20 @@ export default function App() {
         const user = JSON.parse(storedData);
         setSession({ user });
         
-        // Load data immediately on login interaction
-        const userId = user.id || 'saiyam';
-        const data = getUserData(userId);
-        const stats = getDashboardStats(userId);
+        // Load fixed data immediately on login
         setFinancialData({
-          transactions: data.transactions,
-          expenses: data.expenses,
-          invoices: data.invoices,
-          vaultEntries: data.vaultEntries,
-          classifiedIncomes: data.classifiedIncomes,
-          bankAccounts: data.bankAccounts,
-          vaultDocuments: data.vaultDocuments,
-          stats: stats
+          transactions: FIXED_TRANSACTIONS,
+          expenses: FIXED_EXPENSES,
+          invoices: FIXED_INVOICES,
+          vaultEntries: FIXED_VAULT_ENTRIES,
+          classifiedIncomes: [],
+          bankAccounts: FIXED_BANK_ACCOUNTS,
+          vaultDocuments: FIXED_VAULT_DOCUMENTS,
+          stats: FIXED_STATS
         });
         
         // Generate notifications based on actual transactions
-        setNotifications(generateNotifications(data.transactions));
+        setNotifications(generateNotifications(FIXED_TRANSACTIONS));
 
         setView('DASHBOARD');
         setToast({ msg: `Welcome back, ${user.name}!`, type: 'success' });
