@@ -31,9 +31,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ view, setView, handleLogout })
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2.5 bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-800 rounded-lg shadow-lg"
+        className="md:hidden fixed top-4 left-4 z-50 p-3 bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-800 rounded-lg shadow-lg"
+        aria-label={isMobileOpen ? 'Close menu' : 'Open menu'}
       >
-        <svg className="w-6 h-6 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-6 h-6 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           {isMobileOpen ? (
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           ) : (
@@ -53,13 +54,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ view, setView, handleLogout })
       {/* Sidebar */}
       <aside className={`w-64 bg-white dark:bg-black border-r-4 border-yellow-400 flex flex-col fixed h-full transition-transform duration-300 ${
         isMobileOpen ? 'translate-x-0 z-40' : '-translate-x-full md:translate-x-0 z-40'
-      }`}>
+      }`} aria-label="Main navigation">
         <div className="py-5 pr-4 pl-16 md:pl-6 flex items-center gap-3 border-b-2 border-gray-200 dark:border-gray-800">
           <PayLockrLogo size={32} />
-          <span className="text-xl md:text-2xl font-black uppercase text-black dark:text-white tracking-tight">PAYLOCKR</span>
+          <h1 className="text-xl md:text-2xl font-black uppercase text-black dark:text-white tracking-tight">PAYLOCKR</h1>
         </div>
       
-      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto" role="navigation">
         {[
           { id: 'DASHBOARD', icon: LayoutDashboard, label: 'Dashboard' },
           { id: 'SMART_TAX_VAULT', icon: Wallet, label: 'Smart Tax Vault' },
@@ -84,16 +85,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ view, setView, handleLogout })
                 ? 'bg-yellow-400 text-black' 
                 : 'text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900'
             }`}
+            aria-label={`Navigate to ${item.label}`}
+            aria-current={view === item.id ? 'page' : undefined}
           >
-            <item.icon size={20} />
+            <item.icon size={20} aria-hidden="true" />
             {item.label}
           </button>
         ))}
       </nav>
 
       <div className="p-4 border-t-2 border-gray-200 dark:border-gray-800">
-        <button onClick={handleLogout} className="flex items-center gap-3 text-red-500 dark:text-red-400 px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 w-full transition-colors font-bold uppercase text-xs">
-          <LogOut size={20} /> LOGOUT
+        <button onClick={handleLogout} className="flex items-center gap-3 text-red-500 dark:text-red-400 px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 w-full transition-colors font-bold uppercase text-xs" aria-label="Logout">
+          <LogOut size={20} aria-hidden="true" /> LOGOUT
         </button>
       </div>
     </aside>

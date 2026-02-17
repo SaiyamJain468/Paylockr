@@ -11,15 +11,27 @@ export default defineConfig(({ mode }) => {
       },
       plugins: [react()],
       build: {
+        sourcemap: true,
         rollupOptions: {
           output: {
-            manualChunks: {
-              'react-vendor': ['react', 'react-dom'],
-              'lucide': ['lucide-react'],
+            manualChunks(id) {
+              if (id.includes('node_modules')) {
+                if (id.includes('react') || id.includes('react-dom')) {
+                  return 'react';
+                }
+                if (id.includes('lucide-react')) {
+                  return 'icons';
+                }
+                if (id.includes('recharts')) {
+                  return 'charts';
+                }
+                return 'vendor';
+              }
             },
           },
         },
-        chunkSizeWarningLimit: 1000,
+        chunkSizeWarningLimit: 500,
+        cssCodeSplit: true,
       },
       define: {
         'process.env.VITE_GEMINI_API_KEY': JSON.stringify(env.VITE_GEMINI_API_KEY),

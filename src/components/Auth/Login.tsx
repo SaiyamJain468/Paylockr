@@ -162,14 +162,25 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onNavigateToSignup, isDar
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="peer sr-only"
+                  />
+                  <div className={`w-5 h-5 border-2 rounded ${
+                    isDarkMode ? 'border-slate-600 bg-slate-800' : 'border-gray-300 bg-white'
+                  } peer-checked:bg-blue-600 peer-checked:border-blue-600 peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-offset-2 transition-all flex items-center justify-center`}>
+                    {rememberMe && (
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                <span className={`text-sm select-none ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                   Remember me
                 </span>
               </label>

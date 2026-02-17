@@ -124,9 +124,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <div className="relative" ref={notificationRef}>
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className={`relative p-2 sm:p-3 border-2 ${isDarkMode ? 'border-gray-800 hover:border-yellow-400' : 'border-gray-300 hover:border-yellow-400'} transition-all`}
+                  className={`relative p-3 border-2 ${isDarkMode ? 'border-gray-800 hover:border-yellow-400' : 'border-gray-300 hover:border-yellow-400'} transition-all`}
+                  aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
                 >
-                  <Bell className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-black'}`} />
+                  <Bell className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-black'}`} aria-hidden="true" />
                   {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 text-black text-xs font-black flex items-center justify-center">
                       {unreadCount}
@@ -140,13 +141,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   } border-4 max-h-[32rem] overflow-hidden flex flex-col z-[100]`}>
                     <div className={`p-4 border-b-4 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
                       <div className="flex items-center justify-between">
-                        <h3 className={`font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        <h2 className={`font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'}`}>
                           NOTIFICATIONS
-                        </h3>
+                        </h2>
                         {unreadCount > 0 && (
                           <button
                             onClick={markAllAsRead}
-                            className="text-xs font-bold uppercase text-cyan-500 hover:text-cyan-400"
+                            className="text-xs font-bold uppercase text-cyan-500 hover:text-cyan-400 py-2"
+                            aria-label="Mark all as read"
                           >
                             MARK ALL AS READ
                           </button>
@@ -189,17 +191,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
                               {getNotificationIcon(notification.type)}
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-start justify-between gap-2">
-                                  <h4 className={`font-black uppercase text-xs ${isDarkMode ? 'text-white' : 'text-black'} truncate`}>
+                                  <h3 className={`font-black uppercase text-xs ${isDarkMode ? 'text-white' : 'text-black'} truncate`}>
                                     {notification.title}
-                                  </h4>
+                                  </h3>
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       deleteNotification(notification.id);
                                     }}
-                                    className={`flex-shrink-0 ${isDarkMode ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+                                    className={`flex-shrink-0 p-2 ${isDarkMode ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+                                    aria-label="Delete notification"
                                   >
-                                    <X className="w-4 h-4" />
+                                    <X className="w-4 h-4" aria-hidden="true" />
                                   </button>
                                 </div>
                                 <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-gray-500' : 'text-gray-600'} mt-1`}>
@@ -221,9 +224,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
               <button
                 onClick={() => setCurrentView('HELP')}
-                className={`p-2 sm:p-3 border-2 font-bold uppercase text-xs ${isDarkMode ? 'border-gray-800 hover:border-cyan-500 text-white' : 'border-gray-300 hover:border-cyan-500 text-black'} transition-all flex items-center gap-2`}
+                className={`p-3 border-2 font-bold uppercase text-xs ${isDarkMode ? 'border-gray-800 hover:border-cyan-500 text-white' : 'border-gray-300 hover:border-cyan-500 text-black'} transition-all flex items-center gap-2`}
+                aria-label="Get help"
               >
-                <HelpCircle className="w-5 h-5" />
+                <HelpCircle className="w-5 h-5" aria-hidden="true" />
                 <span className="hidden sm:inline">HELP</span>
               </button>
             </div>
@@ -245,9 +249,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="flex flex-col md:flex-row items-start gap-4">
               <Calendar className={`w-12 h-12 ${isDarkMode ? 'text-yellow-400' : 'text-yellow-500'} flex-shrink-0`} />
               <div className="flex-1">
-                <h3 className={`text-lg font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'} mb-2`}>
+                <h2 className={`text-lg font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'} mb-2`}>
                   NEXT DEADLINE: {nextDeadline.quarter}
-                </h3>
+                </h2>
                 <p className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-600'} mb-4`}>
                   {new Date(nextDeadline.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()}
                 </p>
@@ -267,6 +271,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <button
                 onClick={() => setCurrentView('TAX_CALENDAR')}
                 className="w-full md:w-auto px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase transition-all"
+                aria-label="View tax calendar"
               >
                 VIEW CALENDAR
               </button>
@@ -301,19 +306,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className={`${isDarkMode ? 'bg-black border-l-8 border-cyan-500' : 'bg-white dark:bg-black border-l-8 border-cyan-500'} p-6 shadow-lg`}>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className={`text-xl font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'}`}>
+              <h2 className={`text-xl font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'}`}>
                 RECENT TRANSACTIONS
-              </h3>
+              </h2>
               <p className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-600'} mt-2`}>
                 LATEST {recentTransactions.length}
               </p>
             </div>
             <button
               onClick={() => setCurrentView('TRANSACTIONS')}
-              className="text-cyan-500 hover:text-cyan-400 font-bold uppercase text-xs flex items-center gap-1 transition-colors"
+              className="text-cyan-500 hover:text-cyan-400 font-bold uppercase text-xs flex items-center gap-1 transition-colors py-2"
+              aria-label="View all transactions"
             >
               VIEW ALL
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </button>
           </div>
 

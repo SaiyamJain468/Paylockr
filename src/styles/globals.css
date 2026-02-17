@@ -73,6 +73,18 @@
 }
 
 @layer components {
+  /* Touch targets */
+  button, a[href], input, select, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better contrast */
+  .text-gray-500 { color: #6b7280; }
+  .text-gray-600 { color: #4b5563; }
+  .dark .text-gray-500 { color: #9ca3af; }
+  .dark .text-gray-600 { color: #d1d5db; }
+  
   .animate-fade-in-up {
     animation: fadeInUp 0.5s ease-out;
   }
