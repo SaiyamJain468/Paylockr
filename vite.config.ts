@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
             },
           },
         },
-        chunkSizeWarningLimit: 500,
+        chunkSizeWarningLimit: 1000,
         cssCodeSplit: true,
       },
       define: {
