@@ -317,6 +317,7 @@ export default function App() {
               classifiedIncomes={classifiedIncomes}
               vaultEntries={vaultEntries}
               setCurrentView={setView}
+              stats={stats}
             />
           )}
           {view === 'TRANSACTIONS' && <Transactions transactions={transactions} onAdd={addTransaction} onUpdate={(updated) => {

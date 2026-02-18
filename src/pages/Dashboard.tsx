@@ -17,6 +17,9 @@ import { Transaction, ViewState, TaxDeadline, TransactionType, TransactionStatus
 import { Stats } from '../components/Dashboard/Stats';
 import { Chart } from '../components/Dashboard/Chart';
 import { QuickActions } from '../components/Dashboard/QuickActions';
+import { TaxBreakdown } from '../components/Dashboard/TaxBreakdown';
+import { TaxSlabExplainer } from '../components/Dashboard/TaxSlabExplainer';
+import { calculateTax, getTaxSlab } from '../utils/taxCalculator';
 
 interface DashboardProps {
   transactions: Transaction[]; 
@@ -48,6 +51,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   stats
 }) => {
   const notificationRef = useRef<HTMLDivElement>(null);
+  const [incomeView, setIncomeView] = React.useState<'MONTHLY' | 'YEARLY'>('MONTHLY');
   
   // Use passed transactions to ensure consistency
   const recentTransactions = propTransactions.slice(0, 5);
@@ -65,10 +69,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const unreadCount = notifications.filter(n => !n.read).length;
 
   // Use pre-calculated stats from App.tsx (Single Source of Truth)
-  const totalIncome = stats?.totalIncome || 0;
-  const estimatedTax = stats?.vaultBalance || 0; 
+  const cumulativeIncome = stats?.totalIncome || 0;
+  const avgMonthlyIncome = cumulativeIncome / 12; // Average over 12 months
   const vaultBalance = stats?.vaultBalance || 0;
   const spendable = stats?.availableBalance || 0;
+
+  // Calculate based on view selection
+  const displayIncome = incomeView === 'MONTHLY' ? avgMonthlyIncome : cumulativeIncome;
+  const projectedAnnualIncome = avgMonthlyIncome * 12;
+  
+  const taxCalc = calculateTax(projectedAnnualIncome, 0, 'NEW');
+  const taxSlab = getTaxSlab(projectedAnnualIncome, 'NEW');
+  const estimatedTax = incomeView === 'MONTHLY' ? Math.round(taxCalc.totalTax / 12) : taxCalc.totalTax;
 
   // Use dynamic chart data from stats if available, else empty array
   const chartData = stats?.monthlyBreakdown || [];
@@ -92,7 +104,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   };
 
   const calculateTaxHealth = () => {
-    const taxPercentage = totalIncome > 0 ? (estimatedTax / totalIncome) * 100 : 0;
+    const taxPercentage = avgMonthlyIncome > 0 ? (estimatedTax / avgMonthlyIncome) * 100 : 0;
     if (taxPercentage >= 10) return { status: 'Excellent', color: isDarkMode ? 'text-green-400' : 'text-green-600', icon: '🟢' };
     if (taxPercentage >= 5) return { status: 'Good', color: isDarkMode ? 'text-blue-400' : 'text-blue-600', icon: '🔵' };
     return { status: 'Needs Attention', color: isDarkMode ? 'text-amber-400' : 'text-amber-600', icon: '🟡' };
@@ -236,12 +248,43 @@ export const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+        {/* Income View Toggle */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIncomeView('MONTHLY')}
+              className={`px-4 py-2 font-bold uppercase text-xs transition-all ${
+                incomeView === 'MONTHLY'
+                  ? 'bg-yellow-400 text-black'
+                  : isDarkMode ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-gray-200 text-black hover:bg-gray-300'
+              }`}
+              aria-label="View monthly income"
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setIncomeView('YEARLY')}
+              className={`px-4 py-2 font-bold uppercase text-xs transition-all ${
+                incomeView === 'YEARLY'
+                  ? 'bg-yellow-400 text-black'
+                  : isDarkMode ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-gray-200 text-black hover:bg-gray-300'
+              }`}
+              aria-label="View yearly income"
+            >
+              Yearly
+            </button>
+          </div>
+        </div>
+
         <Stats 
-          totalIncome={totalIncome} 
+          totalIncome={displayIncome} 
           estimatedTax={estimatedTax} 
           vaultBalance={vaultBalance} 
           spendable={spendable} 
-          isDarkMode={isDarkMode} 
+          isDarkMode={isDarkMode}
+          effectiveTaxRate={taxCalc.effectiveRate}
+          incomeView={incomeView}
+          totalExpense={stats?.totalExpense || 0}
         />
 
         {nextDeadline && (
@@ -284,24 +327,85 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <QuickActions setCurrentView={setCurrentView} vaultBalance={vaultBalance} isDarkMode={isDarkMode} />
         </div>
 
-        {/* Financial Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className={`${isDarkMode ? 'bg-black border-l-4 border-green-500' : 'bg-white dark:bg-black border-l-4 border-green-500'} p-6`}>
-            <p className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-600'} mb-2`}>MONTHLY INCOME</p>
-            <p className={`text-3xl font-black ${isDarkMode ? 'text-white' : 'text-black'}`}>₹{totalIncome.toLocaleString('en-IN')}</p>
-            <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-green-400' : 'text-green-600'} mt-2`}>+15% FROM LAST MONTH</p>
-          </div>
-          <div className={`${isDarkMode ? 'bg-black border-l-4 border-red-500' : 'bg-white dark:bg-black border-l-4 border-red-500'} p-6`}>
-            <p className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-600'} mb-2`}>TAX LIABILITY</p>
-            <p className={`text-3xl font-black ${isDarkMode ? 'text-white' : 'text-black'}`}>₹{estimatedTax.toLocaleString('en-IN')}</p>
-            <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-gray-500' : 'text-gray-600'} mt-2`}>{((estimatedTax/totalIncome)*100).toFixed(1)}% OF INCOME</p>
-          </div>
-          <div className={`${isDarkMode ? 'bg-black border-l-4 border-cyan-500' : 'bg-white dark:bg-black border-l-4 border-cyan-500'} p-6`}>
-            <p className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-600'} mb-2`}>SAVINGS RATE</p>
-            <p className={`text-3xl font-black ${isDarkMode ? 'text-white' : 'text-black'}`}>{((vaultBalance/totalIncome)*100).toFixed(0)}%</p>
-            <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-cyan-400' : 'text-cyan-600'} mt-2`}>EXCELLENT PROGRESS</p>
+        {/* Tax Explanation Card */}
+        <div className={`${isDarkMode ? 'bg-black border-l-8 border-cyan-500' : 'bg-white border-l-8 border-cyan-500'} p-6 mb-8 shadow-lg`}>
+          <h2 className={`text-xl font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'} mb-4`}>
+            💡 YOUR TAX BREAKDOWN EXPLAINED
+          </h2>
+          <div className="space-y-4">
+            <div className={`p-4 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+              <p className={`text-sm font-bold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} leading-relaxed`}>
+                Your average monthly income is <span className={`${isDarkMode ? 'text-green-400' : 'text-green-600'} font-black`}>₹{Math.round(avgMonthlyIncome).toLocaleString('en-IN')}</span>. 
+                Based on projected annual income of <span className={`${isDarkMode ? 'text-cyan-400' : 'text-cyan-600'} font-black`}>₹{projectedAnnualIncome.toLocaleString('en-IN')}</span>, 
+                you fall in the <span className={`${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'} font-black`}>{taxSlab.rate}% tax slab</span> ({taxSlab.label}).
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className={`p-4 border-l-4 ${isDarkMode ? 'border-green-500 bg-gray-900' : 'border-green-500 bg-green-50'}`}>
+                <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-gray-500' : 'text-gray-600'} mb-2`}>AVG MONTHLY INCOME</p>
+                <p className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-black'}`}>₹{Math.round(avgMonthlyIncome).toLocaleString('en-IN')}</p>
+                <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-gray-500' : 'text-gray-600'} mt-1`}>OVER 12 MONTHS</p>
+              </div>
+              
+              <div className={`p-4 border-l-4 ${isDarkMode ? 'border-cyan-500 bg-gray-900' : 'border-cyan-500 bg-cyan-50'}`}>
+                <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-gray-500' : 'text-gray-600'} mb-2`}>PROJECTED ANNUAL</p>
+                <p className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-black'}`}>₹{projectedAnnualIncome.toLocaleString('en-IN')}</p>
+                <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-gray-500' : 'text-gray-600'} mt-1`}>FOR TAX CALCULATION</p>
+              </div>
+            </div>
+
+            <div className={`p-4 ${isDarkMode ? 'bg-gray-900 border-2 border-yellow-400' : 'bg-yellow-50 border-2 border-yellow-400'}`}>
+              <div className="flex items-center justify-between mb-3">
+                <p className={`text-sm font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'}`}>ANNUAL TAX CALCULATION</p>
+                <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>NEW REGIME 2026</p>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-bold ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Projected Income</span>
+                  <span className={`text-xs font-black ${isDarkMode ? 'text-white' : 'text-black'}`}>₹{projectedAnnualIncome.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-bold ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Standard Deduction</span>
+                  <span className={`text-xs font-black ${isDarkMode ? 'text-white' : 'text-black'}`}>- ₹75,000</span>
+                </div>
+                <div className={`pt-2 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-300'} flex items-center justify-between`}>
+                  <span className={`text-xs font-bold ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Taxable Income</span>
+                  <span className={`text-xs font-black ${isDarkMode ? 'text-cyan-400' : 'text-cyan-600'}`}>₹{taxCalc.taxableIncome.toLocaleString('en-IN')}</span>
+                </div>
+                {taxCalc.breakdown?.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between">
+                    <span className={`text-xs font-bold ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {item.slab} @ {taxSlab.rate}%
+                    </span>
+                    <span className={`text-xs font-black ${isDarkMode ? 'text-cyan-400' : 'text-cyan-600'}`}>
+                      ₹{Math.round(item.tax).toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                ))}
+                <div className={`pt-2 border-t-2 ${isDarkMode ? 'border-gray-700' : 'border-gray-300'} flex items-center justify-between`}>
+                  <span className={`text-sm font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'}`}>ANNUAL TAX LIABILITY</span>
+                  <span className={`text-lg font-black ${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>
+                    ₹{Math.round(taxCalc.totalTax).toLocaleString('en-IN')}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className={`p-4 ${isDarkMode ? 'bg-cyan-900/20 border-2 border-cyan-500' : 'bg-cyan-50 border-2 border-cyan-500'}`}>
+              <p className={`text-sm font-bold ${isDarkMode ? 'text-cyan-300' : 'text-cyan-700'} leading-relaxed mb-2`}>
+                💰 <span className="font-black">VAULT STATUS:</span> We've automatically saved ₹{vaultBalance.toLocaleString('en-IN')} (10% of your income) in your tax vault.
+              </p>
+              <p className={`text-xs font-bold ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                • Your actual annual tax liability: ₹{Math.round(taxCalc.totalTax).toLocaleString('en-IN')}<br/>
+                • Vault has: ₹{vaultBalance.toLocaleString('en-IN')}<br/>
+                • {vaultBalance >= taxCalc.totalTax ? '✅ You have enough saved!' : '⚠️ Keep saving to meet your tax obligation'}
+              </p>
+            </div>
           </div>
         </div>
+
+
 
         <div className={`${isDarkMode ? 'bg-black border-l-8 border-cyan-500' : 'bg-white dark:bg-black border-l-8 border-cyan-500'} p-6 shadow-lg`}>
           <div className="flex items-center justify-between mb-6">

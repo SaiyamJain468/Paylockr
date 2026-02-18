@@ -28,6 +28,7 @@ interface SmartTaxVaultProps {
   classifiedIncomes?: any[];
   vaultEntries?: any[];
   setCurrentView?: (view: any) => void;
+  stats?: any;
 }
 
 export const SmartTaxVault: React.FC<SmartTaxVaultProps> = ({
@@ -35,18 +36,41 @@ export const SmartTaxVault: React.FC<SmartTaxVaultProps> = ({
   transactions = [],
   classifiedIncomes = [],
   vaultEntries = [],
-  setCurrentView
+  setCurrentView,
+  stats
 }) => {
   const [hideVaultBalance, setHideVaultBalance] = useState(false);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [unlockAmount, setUnlockAmount] = useState('');
   const [unlockReason, setUnlockReason] = useState('');
+  const [showAllEntries, setShowAllEntries] = useState(false);
 
-  // Get dashboard data
-  const dashboard = useMemo(
-    () => getSmartTaxVaultDashboard(userId, transactions, classifiedIncomes, vaultEntries),
-    [userId, transactions, classifiedIncomes, vaultEntries]
-  );
+  // Get dashboard data - use centralized stats if available
+  const dashboard = useMemo(() => {
+    if (stats) {
+      // Use centralized stats for consistency
+      return {
+        vaultBalance: stats.vaultBalance || 0,
+        availableForSpending: stats.availableBalance || 0,
+        totalIncome: stats.totalIncome || 0,
+        percentageInVault: stats.totalIncome > 0 ? (stats.vaultBalance / stats.totalIncome) * 100 : 0,
+        monthlyReport: {
+          totalIncome: Math.round((stats.totalIncome || 0) / 12),
+          taxableIncome: Math.round((stats.totalIncome || 0) / 12),
+          nonTaxableIncome: 0,
+          estimatedTax: Math.round((stats.vaultBalance || 0) / 12),
+          vaultAddition: Math.round((stats.vaultBalance || 0) / 12),
+          expenses: Math.round((stats.totalExpense || 0) / 12),
+          netSpendable: Math.round((stats.availableBalance || 0) / 12)
+        },
+        confidenceScore: 98,
+        classifiedCount: classifiedIncomes.length || 0,
+        unconfirmedCount: classifiedIncomes.filter((c: any) => !c.userConfirmed).length || 0,
+        emergencyUnlockRequests: 0
+      };
+    }
+    return getSmartTaxVaultDashboard(userId, transactions, classifiedIncomes, vaultEntries);
+  }, [userId, transactions, classifiedIncomes, vaultEntries, stats]);
 
   const vaultStatus = getVaultStatus(dashboard.vaultBalance, dashboard.monthlyReport?.estimatedTax || 0);
   const complianceMessage = getComplianceMessage(dashboard.confidenceScore);
@@ -485,6 +509,64 @@ export const SmartTaxVault: React.FC<SmartTaxVaultProps> = ({
             </div>
           </div>
         )}
+
+        {/* Vault History Section */}
+        <div className="bg-white dark:bg-black border-l-8 border-yellow-400 p-6 mb-8 shadow-lg">
+          <h2 className="text-2xl font-black uppercase text-black dark:text-white mb-6">📜 VAULT HISTORY</h2>
+          <p className="text-xs font-bold uppercase text-gray-500 mb-6">
+            EVERY TIME YOU RECEIVE INCOME, 10% IS AUTOMATICALLY LOCKED IN THE VAULT FOR TAX PAYMENT
+          </p>
+          
+          <div className="space-y-3">
+            {(showAllEntries ? vaultEntries : vaultEntries.slice(0, 10)).map((entry: any) => {
+              const relatedTransaction = transactions.find((t: any) => t.id === entry.transactionId);
+              return (
+                <div key={entry.id} className="bg-white dark:bg-black border-l-4 border-green-500 p-4 shadow-lg flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className="font-black uppercase text-black dark:text-white text-sm">
+                      {relatedTransaction?.source || 'Income Transaction'}
+                    </p>
+                    <p className="text-xs font-bold uppercase text-gray-500 mt-1">
+                      {new Date(entry.lockedDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase()}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-bold uppercase text-gray-500">INCOME</p>
+                    <p className="text-lg font-black text-black dark:text-white">
+                      ₹{entry.incomeAmount.toLocaleString('en-IN')}
+                    </p>
+                  </div>
+                  <div className="text-right ml-6">
+                    <p className="text-xs font-bold uppercase text-gray-500">TAX LOCKED</p>
+                    <p className="text-lg font-black text-green-400">
+                      ₹{entry.taxAmount.toLocaleString('en-IN')}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          {vaultEntries.length === 0 && (
+            <div className="text-center py-12">
+              <Lock className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+              <p className="text-xs font-bold uppercase text-gray-500">
+                NO VAULT ENTRIES YET. TAX WILL BE AUTOMATICALLY LOCKED WHEN YOU RECEIVE INCOME.
+              </p>
+            </div>
+          )}
+          
+          {vaultEntries.length > 10 && (
+            <div className="mt-6 text-center">
+              <button 
+                onClick={() => setShowAllEntries(!showAllEntries)}
+                className="px-6 py-2 bg-yellow-400 text-black font-bold uppercase hover:bg-yellow-500 transition"
+              >
+                {showAllEntries ? 'SHOW LESS' : `VIEW ALL ${vaultEntries.length} ENTRIES`}
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* How It Works Section */}
         <div className="bg-white dark:bg-black border-b-4 border-cyan-500 p-8">

@@ -119,14 +119,15 @@ export function generateUserData(userId: string) {
   // 1. Generate Historical Income (Last 12 Months - More Data)
   // Freelancers have irregular income. We simulate this.
   let totalIncomeAmount = 0;
+  let cumulativeIncome = 0; // Track cumulative for progressive tax
   
   for (let i = 0; i < 12; i++) {
     const monthDate = new Date(today);
     monthDate.setMonth(today.getMonth() - i - 1); // Ensure past months
     monthDate.setDate(getRandomAmount(1, 28)); // Random day
 
-    // 2-5 Major payments per month (increased)
-    const numPayments = getRandomAmount(2, 5);
+    // 1-2 payments per month for realistic freelancer income
+    const numPayments = getRandomAmount(1, 2);
     
     for (let j = 0; j < numPayments; j++) {
       const isInternational = Math.random() > 0.7;
@@ -135,8 +136,8 @@ export function generateUserData(userId: string) {
       const paymentMethods = isInternational ? ['Wire Transfer', 'PayPal', 'Wise'] : ['NEFT', 'RTGS', 'UPI', 'IMPS'];
       const paymentMethod = getRandomItem(paymentMethods);
       
-      // Realistic income: 25k to 80k per transaction
-      const baseAmount = getRandomAmount(25000, 80000); 
+      // Realistic income: 50k to 270k per transaction
+      const baseAmount = getRandomAmount(50000, 270000); 
       // Make amount look realistic (e.g. 45000 instead of 45123)
       const amount = Math.round(baseAmount / 500) * 500; 
       
@@ -144,8 +145,31 @@ export function generateUserData(userId: string) {
       const txnDate = new Date(monthDate);
       txnDate.setDate(txnDate.getDate() + j * 5); // Spread out
 
-      // Tax Calculation (Simplified 10% TDS estimation)
-      const estimatedTax = Math.round(amount * 0.10);
+      // Calculate tax based on cumulative income and tax slabs
+      cumulativeIncome += amount;
+      const projectedAnnual = (cumulativeIncome / (i + 1)) * 12; // Project to annual
+      
+      // Calculate tax using actual slabs (New Regime 2026)
+      let taxOnIncome = 0;
+      const taxableIncome = Math.max(0, projectedAnnual - 75000); // Standard deduction
+      
+      if (taxableIncome > 1500000) {
+        taxOnIncome = (300000 * 0.05) + (300000 * 0.10) + (200000 * 0.15) + (300000 * 0.20) + ((taxableIncome - 1500000) * 0.30);
+      } else if (taxableIncome > 1200000) {
+        taxOnIncome = (300000 * 0.05) + (300000 * 0.10) + (200000 * 0.15) + ((taxableIncome - 1200000) * 0.20);
+      } else if (taxableIncome > 1000000) {
+        taxOnIncome = (300000 * 0.05) + (300000 * 0.10) + ((taxableIncome - 1000000) * 0.15);
+      } else if (taxableIncome > 700000) {
+        taxOnIncome = (300000 * 0.05) + ((taxableIncome - 700000) * 0.10);
+      } else if (taxableIncome > 300000) {
+        taxOnIncome = (taxableIncome - 300000) * 0.05;
+      }
+      
+      // Add 4% cess
+      taxOnIncome = taxOnIncome * 1.04;
+      
+      // Proportional tax for this transaction
+      const estimatedTax = Math.round((amount / projectedAnnual) * taxOnIncome);
 
       const incomeTxn: Transaction = {
         id: txnId,
