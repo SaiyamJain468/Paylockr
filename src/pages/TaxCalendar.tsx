@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, CheckCircle, Clock, AlertCircle, Download, Filter, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
+import { Calendar, CheckCircle, Clock, AlertCircle, Download, Filter, ChevronLeft, ChevronRight, FileText, MessageSquare } from 'lucide-react';
 import { getUserData } from '../utils/multiUserUnifiedData';
+import { sendTaxDeadlineSMS } from '../services/smsService';
 
 const CURRENT_FY = 2025;
 const AVAILABLE_YEARS = [2025, 2024, 2023, 2022];
@@ -118,15 +119,24 @@ export const TaxCalendar: React.FC<{ userId?: string }> = ({ userId = 'saiyam' }
                 <p className="text-xs md:text-sm font-bold mb-2">NEXT ITR FILING DEADLINE: JULY 31, {CURRENT_FY + 1}</p>
                 <p className="text-xs md:text-sm font-bold">Don't miss the deadline! File your ITR-4 before July 31 to avoid penalties.</p>
                 <button 
-                  onClick={() => {
-                    const reminderDate = new Date(CURRENT_FY + 1, 6, 31); // July 31
-                    const message = `🚨 TAX REMINDER SET!\n\nYou'll be reminded to file ITR-4 before:\nJuly 31, ${CURRENT_FY + 1}\n\nWe'll send you notifications starting 30 days before the deadline.`;
-                    alert(message);
-                    setShowNotification(false);
+                  onClick={async () => {
+                    const phone = prompt('📱 Enter your phone number (with country code):');
+                    if (!phone) return;
+                    
+                    const reminderDate = new Date(CURRENT_FY + 1, 6, 31);
+                    const result = await sendTaxDeadlineSMS(phone, `July 31, ${CURRENT_FY + 1}`, yearData.totalTax);
+                    
+                    if (result.success) {
+                      alert(`✅ SMS Reminder Set!\n\nYou'll receive SMS alerts before:\nJuly 31, ${CURRENT_FY + 1}\n\nPhone: ${phone}`);
+                      setShowNotification(false);
+                    } else {
+                      alert('❌ Failed to set SMS reminder. Try again.');
+                    }
                   }}
-                  className="mt-3 px-4 py-2 bg-white text-black font-bold uppercase text-xs hover:bg-gray-100 transition"
+                  className="mt-3 px-4 py-2 bg-white text-black font-bold uppercase text-xs hover:bg-gray-100 transition flex items-center gap-2"
                 >
-                  SET REMINDER
+                  <MessageSquare className="w-4 h-4" />
+                  SET SMS REMINDER
                 </button>
               </div>
             </div>

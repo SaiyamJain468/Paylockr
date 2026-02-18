@@ -1,213 +1,326 @@
 # Paylockr 💰
 
-A comprehensive financial management and tax compliance platform designed to help individuals and businesses manage their finances efficiently and stay compliant with Indian tax regulations.
+A comprehensive financial management and tax compliance platform designed to help Indian freelancers and businesses manage their finances efficiently and stay tax-compliant.
 
-## Features ✨
+## 🌟 Features
 
-- **Financial Dashboard** - Track your income, expenses, and financial overview at a glance
-- **Tax Calendar** - Stay updated with important tax deadlines and compliance dates
-- **Income Management** - Record and categorize your income sources
-- **Expense Tracking** - Monitor and organize your spending patterns
-- **Tax Planning** - Get insights on tax-saving strategies and deductions
-- **Secure Authentication** - User authentication with Supabase backend
-- **Responsive Design** - Works seamlessly on desktop and mobile devices
+### Core Modules
+- **📊 Financial Dashboard** - Real-time income, expenses, and tax overview
+- **💰 Smart Tax Vault** - Automatic tax calculation based on Indian tax slabs
+- **📅 Tax Calendar** - Never miss tax deadlines with SMS/Email reminders
+- **💳 Transactions** - Track all income and expenses with auto-categorization
+- **🧾 Invoices** - Create professional invoices with auto-transaction linking
+- **📸 Expense Tracking** - OCR-powered receipt scanning with auto-categorization
+- **🏦 Bank Accounts** - Multi-account management with real-time balances
+- **🤖 AI Insights** - Powered by Groq/Gemini AI for tax optimization
 
-## Tech Stack 🛠️
-
-- **Frontend:** React + TypeScript
-- **Build Tool:** Vite
-- **Styling:** CSS3
-- **Backend:** Supabase (Authentication & Database)
-- **Deployment:** Netlify
-
-## Project Structure 📁
-
-```
-src/
-├── components/          # Reusable UI components
-│   └── Button.tsx
-├── pages/              # Page components
-├── services/           # API and service integrations
-│   ├── geminiService.ts
-│   ├── supabaseClient.ts
-│   ├── dataService.ts       # Core data relationship manager
-│   ├── transactionService.ts
-│   └── taxService.ts
-├── styles/             # Global and component styles
-│   └── designSystem.ts
-├── types/              # TypeScript interfaces
-│   └── index.ts
-├── utils/              # Utility functions
-│   ├── multiUserUnifiedData.ts  # Interconnected data system
-│   └── smartTaxVault.ts
-├── App.tsx             # Main app component
-├── main.tsx            # Entry point
-└── index.css           # Global styles
-```
-
-## Data Architecture 🏗️
-
-Paylockr uses a **comprehensive interconnected data model** where every transaction, invoice, expense, and tax entry is meaningfully linked. This creates a living financial ecosystem.
-
-**Key Features:**
-- ✅ Every transaction links to invoices or expenses
-- ✅ Smart Tax Vault auto-calculates from real income
-- ✅ Tax Calendar shows actual amounts from vault
-- ✅ AI Insights analyzes cross-module patterns
-- ✅ Bank accounts reflect real-time balances
-- ✅ No isolated data - everything is connected
-
-**Documentation:**
-- [Complete Data Architecture](./DATA_ARCHITECTURE.md) - Detailed system design
-- [Quick Start Guide](./QUICK_START.md) - How to use the data system
-- [System Diagrams](./SYSTEM_DIAGRAM.md) - Visual data flow maps
-
-**Example Data Flow:**
-```
-Client Pays Invoice → Transaction Created → Vault Entry Generated 
-→ Tax Calendar Updated → Bank Balance Updated → Dashboard Refreshed 
-→ AI Insights Analyzed → Notification Sent
-```
-
-## Getting Started 🚀
-
-### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/SaiyamJain468/Paylockr.git
-   cd Paylockr
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Create environment file**
-   ```bash
-   # The .env.local file already exists, just update it with your keys
-   ```
-   
-   **Add your API keys to `.env.local`:**
-   ```env
-   # Google Gemini AI (Required for AI Insights)
-   VITE_GEMINI_API_KEY=AIzaSyC_your_actual_key_here
-   
-   # Supabase (Optional - for real authentication)
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
-   
-   **Get Gemini API Key (Free):**
-   - Visit: https://aistudio.google.com/app/apikey
-   - Click "Create API Key"
-   - Copy and paste into `.env.local`
-   
-   **Get Supabase Credentials (Optional):**
-   - Visit: https://supabase.com
-   - Create project and get URL + anon key from Settings → API
-
-4. **Start development server**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:5173](http://localhost:5173) in your browser
-   
-   **Note:** After adding API keys to `.env.local`, restart the dev server (Ctrl+C, then `npm run dev`)
-
-### Build for Production
-
-```bash
-npm run build
-```
-
-This generates optimized files in the `dist` folder.
-
-### Deploy to Netlify
-
-1. **Install Netlify CLI**
-   ```bash
-   npm install -g netlify-cli
-   ```
-
-2. **Login to Netlify**
-   ```bash
-   netlify login
-   ```
-
-3. **Deploy**
-   ```bash
-   npm run build
-   netlify deploy --prod
-   ```
-
-## Important Notes ⚠️
-
-When working with JSX and text content containing comparison operators:
-- Replace `>` with `&gt;`
-- Replace `<` with `&lt;`
-
-Example:
-```jsx
-// ❌ Wrong
-<li>Turnover > ₹10 lakh</li>
-
-// ✅ Correct
-<li>Turnover &gt; ₹10 lakh</li>
-```
-
-## Key Features in Detail 📋
-
-### AI-Powered Tax Insights ✨
-Get personalized tax recommendations using Google Gemini AI:
-- Analyze your transaction patterns
-- Identify tax-saving opportunities
-- Get recommendations on tax percentage to set aside
-- Understand tax slab risks
-- **Setup:** See `SETUP_GUIDE.md` for API key instructions
-
-### Tax Calendar
-Comprehensive tax compliance calendar for Indian taxpayers including:
-- Income Tax deadlines
-- GST filing dates
-- TDS deposit schedules
-- Audit requirements
-- Quarterly advance tax payments
-
-### Financial Dashboard
-- Real-time balance overview
-- Income vs. Expense visualization
-- Transaction history
-- Financial health metrics
-
-### Authentication
-Secure user authentication powered by Supabase with:
-- Email/password login
-- Secure session management
-- User data protection
-
-## Contributing 🤝
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License 📄
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support 💬
-
-For support, email support@paylockr.com or open an issue on GitHub.
-
-## Author ✍️
-
-**Saiyam Jain**
-- GitHub: [@SaiyamJain468](https://github.com/SaiyamJain468)
+### Advanced Features
+- **Dynamic Tax Calculation** - Progressive tax slabs (0%, 5%, 10%, 15%, 20%, 30%)
+- **₹75,000 Standard Deduction** - Automatic deduction application
+- **4% Cess** - Included in all tax calculations
+- **Interconnected Data** - Every transaction links to invoices, expenses, and vault
+- **Email Reports** - Monthly financial summaries via EmailJS
+- **SMS Alerts** - Tax deadline reminders (Twilio integration)
+- **OCR Scanning** - Extract data from receipts automatically (Tesseract.js)
+- **Payment Gateway** - Accept payments via Razorpay (UPI/Cards/Net Banking)
 
 ---
 
-**Built with ❤️ for financial freedom**
+## 🛠️ Tech Stack
+
+### Frontend
+- **Framework:** React 18 + TypeScript
+- **Build Tool:** Vite
+- **Styling:** CSS3 with Dark Mode
+- **State Management:** React Hooks
+- **Routing:** Client-side routing
+
+### Backend
+- **Server:** Express.js + Node.js
+- **APIs:** RESTful architecture
+- **Services:** Twilio, SendGrid, Razorpay
+
+### AI & Services
+- **AI:** Groq (Llama 3.1) / Google Gemini
+- **OCR:** Tesseract.js (browser-based)
+- **Email:** EmailJS (client) + SendGrid (server)
+- **SMS:** Twilio
+- **Payments:** Razorpay
+
+### Deployment
+- **Frontend:** Netlify / Vercel
+- **Backend:** Railway / Heroku / Vercel
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js v16+
+- npm or yarn
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/SaiyamJain468/Paylockr.git
+cd Paylockr
+```
+
+### 2. Install Dependencies
+
+**Frontend:**
+```bash
+npm install
+```
+
+**Backend:**
+```bash
+cd backend
+npm install
+```
+
+### 3. Configure Environment
+
+**Frontend (`.env.local`):**
+```env
+# AI (Choose one - both are FREE)
+VITE_GROQ_API_KEY=gsk_your_key_here
+VITE_GEMINI_API_KEY=your_key_here
+
+# EmailJS (FREE - 200 emails/month)
+VITE_EMAILJS_PUBLIC_KEY=your_key
+VITE_EMAILJS_SERVICE_ID=service_xxx
+VITE_EMAILJS_TEMPLATE_ID=template_xxx
+
+# Backend URL
+VITE_BACKEND_URL=http://localhost:3001
+```
+
+**Backend (`backend/.env`):**
+```env
+PORT=3001
+
+# Optional - Leave empty for demo mode
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_PHONE_NUMBER=
+
+SENDGRID_API_KEY=
+SENDGRID_FROM_EMAIL=
+
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+```
+
+### 4. Get API Keys (All FREE)
+
+**Groq AI (Recommended - Fastest):**
+1. Visit: https://console.groq.com/keys
+2. Sign up (no credit card)
+3. Create API key
+4. Add to `.env.local`
+
+**EmailJS:**
+1. Visit: https://www.emailjs.com
+2. Sign up (200 emails/month free)
+3. Get Public Key, Service ID, Template ID
+4. Add to `.env.local`
+
+### 5. Run Application
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm start
+```
+Server runs on http://localhost:3001
+
+**Terminal 2 - Frontend:**
+```bash
+npm run dev
+```
+App runs on http://localhost:5173
+
+---
+
+## 📁 Project Structure
+
+```
+Paylockr/
+├── src/                          # Frontend source
+│   ├── components/               # Reusable UI components
+│   │   ├── common/              # Buttons, inputs, etc.
+│   │   ├── Dashboard/           # Dashboard widgets
+│   │   └── Layout/              # Header, sidebar, footer
+│   ├── pages/                   # Page components
+│   │   ├── Dashboard.tsx        # Main dashboard
+│   │   ├── SmartTaxVault.tsx   # Tax vault management
+│   │   ├── Transactions.tsx    # Transaction history
+│   │   ├── Expenses.tsx        # Expense tracking + OCR
+│   │   ├── Invoices.tsx        # Invoice management
+│   │   ├── TaxCalendar.tsx     # Tax deadlines
+│   │   ├── BankAccounts.tsx    # Bank management
+│   │   └── Insights.tsx        # AI-powered insights
+│   ├── services/                # API integrations
+│   │   ├── geminiService.ts    # AI service (Groq/Gemini)
+│   │   ├── emailService.ts     # Email notifications
+│   │   ├── smsService.ts       # SMS alerts
+│   │   └── ocrService.ts       # Receipt scanning
+│   ├── utils/                   # Utility functions
+│   │   ├── multiUserUnifiedData.ts  # Data management
+│   │   └── taxCalculator.ts    # Tax calculations
+│   └── types/                   # TypeScript interfaces
+│
+├── backend/                     # Backend server
+│   ├── server.js               # Express server
+│   ├── .env                    # Environment config
+│   └── package.json            # Dependencies
+│
+├── test-receipts/              # Sample receipts for OCR testing
+└── README.md                   # This file
+```
+
+---
+
+## 🎯 Key Features Explained
+
+### 1. Smart Tax Vault
+- **Auto-calculates** tax based on Indian tax slabs
+- **Progressive taxation:** 0% → 5% → 10% → 15% → 20% → 30%
+- **Standard deduction:** ₹75,000 automatically applied
+- **4% cess** included
+- **Vault history:** Track every tax amount locked
+
+### 2. AI Insights (4 Features)
+- **Tax Insights:** Analyze income patterns, identify tax-saving opportunities
+- **Expense Analysis:** Optimize spending, suggest business deductions
+- **Tax-Saving Tips:** Personalized strategies (80C, 80D, etc.)
+- **Financial Health:** Score 0-100 with priority actions
+
+### 3. OCR Receipt Scanning
+- **Upload receipt photo** → Auto-extracts amount, date, vendor
+- **Auto-categorizes** expenses (Food, Transport, Software, etc.)
+- **No manual entry** needed
+- **Works offline** in browser
+
+### 4. Email & SMS Notifications
+- **Monthly reports** via email
+- **Tax deadline reminders** via SMS
+- **Payment confirmations**
+- **2FA OTP** for security
+
+---
+
+## 🧪 Testing
+
+### Test OCR
+1. Go to **Expenses** page
+2. Click **"SCAN RECEIPT"**
+3. Upload `test-receipts/sample-receipt-1.html` (screenshot it first)
+4. See auto-extracted data!
+
+### Test AI
+1. Go to **Insights** page
+2. Click any AI button (Tax Insights, Expense Analysis, etc.)
+3. See AI-generated recommendations
+
+### Test Email
+1. Go to **Dashboard**
+2. Click **"EMAIL REPORT"**
+3. Enter your email
+4. Check inbox!
+
+---
+
+## 🚀 Deployment
+
+### Frontend (Netlify)
+```bash
+npm run build
+netlify deploy --prod
+```
+
+### Backend (Railway)
+```bash
+cd backend
+railway login
+railway init
+railway up
+```
+
+---
+
+## 📊 Data Flow
+
+```
+User Action → Frontend → Backend API → External Service
+                ↓           ↓              ↓
+            Update UI   Process Data   Return Result
+                ↓           ↓              ↓
+            Dashboard ← Unified Data ← Service Response
+```
+
+**Example: Adding Invoice**
+1. User creates invoice → Frontend
+2. Invoice saved → Unified Data
+3. Transaction auto-created → Linked to invoice
+4. Tax calculated → Added to vault
+5. Dashboard updated → Real-time
+6. Email sent → Confirmation
+
+---
+
+## 🔒 Security
+
+- ✅ No API keys in frontend code
+- ✅ Backend handles sensitive operations
+- ✅ Environment variables for secrets
+- ✅ CORS enabled for security
+- ✅ Input validation on all endpoints
+
+---
+
+## 📝 API Documentation
+
+See `backend/API_DOCS.md` for complete API reference with 14 endpoints.
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Please:
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Open Pull Request
+
+---
+
+## 📄 License
+
+MIT License - see LICENSE file
+
+---
+
+## 👨‍💻 Author
+
+**Saiyam Jain**
+- GitHub: [@SaiyamJain468](https://github.com/SaiyamJain468)
+- Email: support@paylockr.com
+
+---
+
+## 🙏 Acknowledgments
+
+- **Groq** - Lightning-fast AI inference
+- **Google Gemini** - Powerful AI capabilities
+- **EmailJS** - Simple email service
+- **Tesseract.js** - Browser-based OCR
+- **Twilio** - SMS notifications
+- **Razorpay** - Payment gateway
+
+---
+
+**Built with ❤️ for Indian freelancers and businesses**
+
+**Status:** ✅ Production Ready | 🎯 Fully Functional | 🚀 Deployed

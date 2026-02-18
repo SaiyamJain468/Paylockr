@@ -1,151 +1,203 @@
-# 🚀 Paylockr Backend
+# 🚀 Paylockr Backend API
 
-Express.js backend for SMS and Email notifications.
+Professional Express.js backend for Paylockr financial management platform.
 
-## 📦 Features
+## 📦 What This Does
 
-- 📱 **SMS Notifications** (Twilio)
-  - Tax deadline alerts
-  - Payment confirmations
-  - 2FA OTP
-  - Vault unlock alerts
+Handles server-side operations that require security:
+- 📱 **SMS Notifications** - Tax alerts, OTP, payment confirmations
+- 📧 **Email Service** - Monthly reports, receipts, reminders
+- 💳 **Payment Gateway** - Razorpay integration for UPI/Cards
+- 🧮 **Tax Calculator** - Indian tax slab calculations
+- 💾 **Data Management** - User data storage (future)
 
-- 📧 **Email Notifications** (SendGrid)
-  - Monthly reports
-  - Tax reminders
-  - Payment receipts
+---
 
-## 🛠️ Setup
+## ✨ Features
 
-### 1. Install Dependencies
+- ✅ **Demo Mode** - Works without API keys (logs to console)
+- ✅ **14 API Endpoints** - SMS, Email, Payments, Tax, User data
+- ✅ **CORS Enabled** - Works with frontend on different port
+- ✅ **Error Handling** - Comprehensive error responses
+- ✅ **Request Logging** - Track all API calls
+- ✅ **Input Validation** - Secure data handling
+
+---
+
+## 🚀 Quick Start
+
+### 1. Install
 ```bash
 cd backend
 npm install
 ```
 
-### 2. Configure Environment Variables
+### 2. Configure (Optional)
+Edit `.env` - leave empty for demo mode
 
-Edit `.env` file:
-
-```env
-PORT=3001
-
-# Twilio (Get from https://console.twilio.com)
-TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxx
-TWILIO_AUTH_TOKEN=your_auth_token
-TWILIO_PHONE_NUMBER=+1234567890
-
-# SendGrid (Get from https://app.sendgrid.com)
-SENDGRID_API_KEY=SG.xxxxxxxxxxxxx
-SENDGRID_FROM_EMAIL=noreply@paylockr.com
-```
-
-### 3. Get API Keys
-
-#### Twilio (FREE $15 credit):
-1. Go to https://console.twilio.com
-2. Sign up (free trial)
-3. Get phone number
-4. Copy Account SID, Auth Token
-
-#### SendGrid (FREE 100 emails/day):
-1. Go to https://app.sendgrid.com
-2. Sign up
-3. Settings → API Keys → Create API Key
-4. Verify sender email
-
-### 4. Start Server
+### 3. Run
 ```bash
 npm start
 ```
 
-Server runs on http://localhost:3001
+Server: http://localhost:3001
+
+---
 
 ## 📡 API Endpoints
 
-### Health Check
-```
-GET /api/health
-```
+### Health
+- `GET /` - API info
+- `GET /api/health` - Service status
 
-### Send SMS
-```
-POST /api/sms/send
-Body: { to, message }
-```
+### SMS (4 endpoints)
+- `POST /api/sms/send` - Custom SMS
+- `POST /api/sms/tax-deadline` - Tax reminder
+- `POST /api/sms/payment-confirmation` - Payment alert
+- `POST /api/sms/otp` - 2FA OTP
 
-### Tax Deadline SMS
-```
-POST /api/sms/tax-deadline
-Body: { phone, deadline, amount }
-```
+### Email (2 endpoints)
+- `POST /api/email/send` - Custom email
+- `POST /api/email/monthly-report` - Financial report
 
-### Payment Confirmation SMS
-```
-POST /api/sms/payment-confirmation
-Body: { phone, amount, transactionId }
-```
+### Payments (3 endpoints)
+- `POST /api/payment/create-order` - Create Razorpay order
+- `POST /api/payment/verify` - Verify payment
+- `GET /api/payment/:id` - Get payment details
 
-### 2FA OTP
-```
-POST /api/sms/otp
-Body: { phone }
-```
+### Tax (2 endpoints)
+- `POST /api/tax/calculate` - Calculate Indian income tax
+- `POST /api/tax/advance-tax` - Quarterly tax breakdown
 
-### Send Email
-```
-POST /api/email/send
-Body: { to, subject, html, text }
-```
+### User (2 endpoints)
+- `POST /api/user/save-data` - Save user data
+- `GET /api/user/:id/data` - Get user data
+
+**Total: 14 Endpoints**
+
+---
 
 ## 🧪 Test
 
+### Health Check
 ```bash
-# Test health
 curl http://localhost:3001/api/health
+```
 
-# Test SMS (demo mode)
+### Tax Calculator
+```bash
+curl -X POST http://localhost:3001/api/tax/calculate \
+  -H "Content-Type: application/json" \
+  -d '{"income":1200000,"deductions":75000}'
+```
+
+### SMS (Demo Mode)
+```bash
 curl -X POST http://localhost:3001/api/sms/tax-deadline \
   -H "Content-Type: application/json" \
-  -d '{"phone":"+919876543210","deadline":"July 31, 2024","amount":50000}'
+  -d '{"phone":"+919876543210","deadline":"July 31","amount":50000}'
 ```
+
+---
+
+## 🔧 Services Setup (Optional)
+
+### Twilio (SMS)
+1. https://console.twilio.com
+2. Get phone number
+3. Add to `.env`
+
+### SendGrid (Email)
+1. https://app.sendgrid.com
+2. Create API key
+3. Add to `.env`
+
+### Razorpay (Payments)
+1. https://dashboard.razorpay.com
+2. Get API keys
+3. Add to `.env`
+
+**Note:** All services work in demo mode without keys!
+
+---
+
+## 📝 Response Format
+
+### Success
+```json
+{
+  "success": true,
+  "data": {}
+}
+```
+
+### Error
+```json
+{
+  "success": false,
+  "error": "Error message"
+}
+```
+
+### Demo Mode
+```json
+{
+  "success": true,
+  "demo": true,
+  "message": "Demo: SMS sent"
+}
+```
+
+---
 
 ## 🚀 Deploy
 
-### Vercel:
-```bash
-npm install -g vercel
-vercel
-```
-
-### Heroku:
-```bash
-heroku create paylockr-backend
-git push heroku main
-```
-
-### Railway:
+### Railway (Recommended)
 ```bash
 railway login
 railway init
 railway up
 ```
 
-## 📝 Notes
+### Vercel
+```bash
+vercel
+```
 
-- Works in **demo mode** without API keys (logs to console)
-- Add API keys for production use
-- CORS enabled for frontend (localhost:5173)
-- All endpoints return JSON
-
-## 🔒 Security
-
-- Never commit `.env` file
-- Use environment variables in production
-- Validate phone numbers
-- Rate limit API calls
-- Store OTPs securely with expiry
+### Heroku
+```bash
+heroku create paylockr-api
+git push heroku main
+```
 
 ---
 
-**Status:** ✅ Ready to use (demo mode) | Add API keys for production
+## 📊 Status Codes
+
+- `200` - Success
+- `400` - Bad Request
+- `404` - Not Found
+- `500` - Server Error
+
+---
+
+## 🔒 Security
+
+- ✅ Environment variables for secrets
+- ✅ CORS enabled
+- ✅ Input validation
+- ✅ Error handling
+- ✅ No sensitive data in logs
+
+---
+
+## 📚 Documentation
+
+See `API_DOCS.md` for complete API reference with examples.
+
+---
+
+**Status:** ✅ Production Ready (Demo Mode)  
+**Version:** 1.0.0  
+**Port:** 3001  
+**License:** MIT

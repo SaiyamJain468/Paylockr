@@ -31,3 +31,7 @@ dist-ssr
 
 # Documentation folder
 extra/
+
+# Ignore all markdown files
+*.md
+!README.md
