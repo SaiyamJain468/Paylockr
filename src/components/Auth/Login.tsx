@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Lock, Calculator, Shield, TrendingUp, AlertCircle, Eye, EyeOff, X, User } from 'lucide-react';
 import { authenticateUser, DEMO_USERS } from '../../utils/multiUserUnifiedData';
 import { Button } from '../common/Button';
+import { PayLockrLogo } from '../common/Logo';
 
 interface LoginProps {
   onLogin: () => void;
@@ -51,9 +52,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onNavigateToSignup, isDar
       <div className={`hidden lg:flex lg:w-1/2 ${isDarkMode ? 'bg-gray-900 border-r-4 border-yellow-400' : 'bg-black'} p-12 flex-col justify-between`}>
         <div>
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center">
-              <Lock className="w-7 h-7 text-black" />
-            </div>
+            <PayLockrLogo size={48} />
             <span className="text-3xl font-black uppercase text-white">PAYLOCKR</span>
           </div>
           <h1 className="text-4xl font-black uppercase text-white mb-4 leading-tight">
@@ -93,9 +92,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onNavigateToSignup, isDar
       <div className="flex-1 flex items-center justify-center p-8 relative">
         <div className="w-full max-w-md">
           <div className="lg:hidden flex items-center gap-3 justify-center mb-8">
-            <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
-              <Lock className="w-6 h-6 text-white" />
-            </div>
+            <PayLockrLogo size={40} />
             <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>PayLockr</span>
           </div>
 
