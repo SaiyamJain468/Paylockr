@@ -1,0 +1,2 @@
+cd "c:\Users\saiya\Desktop\Cu AI fest\Class\Prototype 4\Prototype 4\Prototype 4"
+start-paylockr.bat

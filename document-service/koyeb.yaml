@@ -1,0 +1,14 @@
+app: paylockr-backend
+services:
+  - name: api
+    type: web
+    instance_type: nano
+    ports:
+      - port: 8000
+        protocol: http
+    env:
+      - key: PORT
+        value: "8000"
+    build:
+      type: buildpack
+    run_command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
