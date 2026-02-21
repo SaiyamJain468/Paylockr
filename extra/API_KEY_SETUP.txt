@@ -1,0 +1,34 @@
+╔══════════════════════════════════════════════════════════════╗
+║                  GEMINI API KEY SETUP                        ║
+║                     Quick Reference                          ║
+╚══════════════════════════════════════════════════════════════╝
+
+📍 STEP 1: Get API Key
+   → Visit: https://aistudio.google.com/app/apikey
+   → Click "Create API Key"
+   → Copy the key (starts with AIza...)
+
+📍 STEP 2: Add to .env.local
+   → Open: .env.local (in project root)
+   → Find: VITE_GEMINI_API_KEY=your_gemini_api_key_here
+   → Replace with: VITE_GEMINI_API_KEY=AIzaSyC_your_actual_key
+
+📍 STEP 3: Install & Run
+   → Run: npm install
+   → Run: npm run dev
+   → Open: http://localhost:5173
+
+📍 STEP 4: Test AI Insights
+   → Login with demo account
+   → Click "AI Insights" in sidebar
+   → Click "Generate Insights" button
+   → See AI-powered tax recommendations!
+
+╔══════════════════════════════════════════════════════════════╗
+║  IMPORTANT: Restart dev server after adding API key!        ║
+║  Press Ctrl+C, then run: npm run dev                        ║
+╚══════════════════════════════════════════════════════════════╝
+
+🔒 Security Note: .env.local is in .gitignore - your key is safe!
+
+📚 Full Guide: See SETUP_GUIDE.md for detailed instructions

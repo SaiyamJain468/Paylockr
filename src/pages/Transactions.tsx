@@ -1,21 +1,24 @@
-import React, { useState, useMemo } from 'react';
-import { ChevronDown, Search, Filter, Download, ArrowDownLeft, ArrowUpRight, Calendar as CalendarIcon, X, Plus, DollarSign, Ban } from 'lucide-react';
+import React, { useState, useMemo, useRef } from 'react';
+import { ChevronDown, Search, Filter, Download, ArrowDownLeft, ArrowUpRight, Calendar as CalendarIcon, X, Plus, DollarSign, Ban, Upload, Scan } from 'lucide-react';
 import { CATEGORIES } from '../utils/multiUserUnifiedData';
 import { Transaction, TransactionType, TransactionStatus } from '../types';
 import { Button } from '../components/common/Button';
 import { TransactionModal } from '../components/Transactions/TransactionModal';
+import { extractTransactionsFromImage } from '../services/geminiService';
+import { importTransactions } from '../services/importStatementService';
 
 type SortBy = 'DATE_NEW' | 'DATE_OLD' | 'AMOUNT_HIGH' | 'AMOUNT_LOW';
-type FilterType = 'ALL' | 'INCOME' | 'EXPENSE' | 'TRANSFER';
-type TimePeriod = 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH' | 'LAST_3M' | 'CUSTOM';
+type FilterType = 'ALL' | 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'MISSING_INFO';
+type TimePeriod = 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH' | 'LAST_3M' | 'ALL_TIME' | 'CUSTOM';
 
 interface TransactionsProps {
-  transactions: Transaction[]; 
+  transactions: Transaction[];
   onAdd: (t: Transaction) => void;
+  onBulkAdd?: (txns: Transaction[]) => void;
   onUpdate?: (t: Transaction) => void;
 }
 
-export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], onAdd, onUpdate }) => {
+export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], onAdd, onBulkAdd, onUpdate }) => {
   const [filterType, setFilterType] = useState<FilterType>('ALL');
   const [sortBy, setSortBy] = useState<SortBy>('DATE_NEW');
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('THIS_MONTH');
@@ -25,19 +28,40 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
   const [showFilters, setShowFilters] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importStatus, setImportStatus] = useState<{ msg: string; type: 'info' | 'success' | 'error' } | null>(null);
+  const [importedTxns, setImportedTxns] = useState<import('../types').Transaction[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Helper to get date object safely
-  const getTxnDate = (t: Transaction) => {
-    return t.date instanceof Date ? t.date : new Date(t.date);
+  // Returns true if date is missing/null/empty
+  const isMissingDate = (t: Transaction) =>
+    !t.date || t.date === '' || t.date === 'null';
+
+  // Returns true if any key field is missing
+  const isMissingInfo = (t: Transaction) =>
+    isMissingDate(t) || !t.source || t.source === '' || !t.amount;
+
+  // Helper to get date object safely — null-date returns epoch so we can detect it
+  const getTxnDate = (t: Transaction): Date => {
+    if (isMissingDate(t)) return new Date(0); // epoch sentinel for missing date
+    return t.date instanceof Date ? t.date : new Date(t.date as string);
   };
 
   const filteredTransactions = useMemo(() => {
-    let filtered = [...transactions];
+    // Merge prop transactions with locally-stored imported ones (dedup by id)
+    const propIds = new Set(transactions.map(t => t.id));
+    const localOnly = importedTxns.filter(t => !propIds.has(t.id));
+    let filtered = [...localOnly, ...transactions];
 
-    // Filter by Type
-    if (filterType !== 'ALL') {
+    // Filter by Type / Special filters
+    if (filterType === 'MISSING_INFO') {
+      // Show only transactions with missing date, source, or amount
+      filtered = filtered.filter(t => isMissingInfo(t));
+    } else if (filterType !== 'ALL') {
       if (filterType === 'INCOME') filtered = filtered.filter(t => t.type === TransactionType.BUSINESS || t.type === TransactionType.REFUND);
       if (filterType === 'EXPENSE') filtered = filtered.filter(t => t.type === TransactionType.PERSONAL);
+      if (filterType === 'TRANSFER') filtered = filtered.filter(t => t.category === 'TRANSFER');
     }
 
     // Filter by Category
@@ -75,15 +99,29 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
       case 'LAST_3M':
         startDate.setMonth(now.getMonth() - 3);
         break;
+      case 'ALL_TIME':
       default:
-        startDate = new Date(0); // All time if custom isn't set
+        startDate = new Date(0); // Epoch — show everything
         break;
     }
 
-    filtered = filtered.filter(t => getTxnDate(t) >= startDate);
+    // Date filter — null-date rows always pass through (shown in any time period)
+    if (timePeriod !== 'ALL_TIME' && timePeriod !== 'CUSTOM') {
+      filtered = filtered.filter(t => isMissingDate(t) || getTxnDate(t) >= startDate);
+    }
 
-    // Sorting
+    // Sorting — null-date rows always float to TOP on date sorts
     filtered.sort((a, b) => {
+      const missingA = isMissingDate(a);
+      const missingB = isMissingDate(b);
+
+      if (sortBy === 'DATE_NEW' || sortBy === 'DATE_OLD') {
+        // Missing dates always on top regardless of sort direction
+        if (missingA && missingB) return 0;
+        if (missingA) return -1;
+        if (missingB) return 1;
+      }
+
       const dateA = getTxnDate(a).getTime();
       const dateB = getTxnDate(b).getTime();
       switch (sortBy) {
@@ -96,7 +134,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
     });
 
     return filtered;
-  }, [transactions, filterType, selectedCategories, amountRange, searchTerm, timePeriod, sortBy]);
+  }, [transactions, importedTxns, filterType, selectedCategories, amountRange, searchTerm, timePeriod, sortBy]);
 
   // Calculate summary stats
   const summary = useMemo(() => {
@@ -116,13 +154,14 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
     const grouped: Record<string, Transaction[]> = {};
 
     filteredTransactions.forEach(txn => {
-      const date = getTxnDate(txn);
-      const dateKey = date.toLocaleDateString('en-IN', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
+      const dateKey = isMissingDate(txn)
+        ? '⚠ DATE UNKNOWN'
+        : getTxnDate(txn).toLocaleDateString('en-IN', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
 
       if (!grouped[dateKey]) {
         grouped[dateKey] = [];
@@ -155,10 +194,59 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
     }).format(amount);
   };
 
+  const handleImportStatement = async (file: File) => {
+    setIsImporting(true);
+    setImportStatus({ msg: 'Uploading to Gemini AI...', type: 'info' });
+    try {
+      const result = await extractTransactionsFromImage(file);
+      if (!result.transactions || result.transactions.length === 0) {
+        setImportStatus({ msg: 'No transactions found in the file. Please ensure it contains a transaction table.', type: 'error' });
+        setIsImporting(false);
+        return;
+      }
+      setImportStatus({ msg: `Processing ${result.transactions.length} transactions...`, type: 'info' });
+
+      // Map all parsed transactions to Transaction objects
+      const { transactions: mapped } = importTransactions(result.transactions, () => { });
+
+      if (mapped.length === 0) {
+        setImportStatus({ msg: 'No valid transactions could be extracted.', type: 'error' });
+        setIsImporting(false);
+        return;
+      }
+
+      // Store in local state for IMMEDIATE display (no waiting for App.tsx state propagation)
+      setImportedTxns(prev => {
+        const existingIds = new Set(prev.map(t => t.id));
+        return [...mapped.filter(t => !existingIds.has(t.id)), ...prev];
+      });
+
+      // Use bulk add (single state update) if available, otherwise fall back to loop
+      if (onBulkAdd) {
+        onBulkAdd(mapped);
+      } else {
+        mapped.forEach(t => onAdd(t));
+      }
+
+      setImportStatus({
+        msg: `✅ ${mapped.length} transactions imported! (confidence: ${Math.round(result.confidence * 100)}%)`,
+        type: 'success',
+      });
+      // Show ALL_TIME so every imported transaction is visible regardless of date
+      setTimePeriod('ALL_TIME');
+    } catch (err: any) {
+      console.error('[Import] Error:', err);
+      setImportStatus({ msg: `❌ Import failed: ${err.message || 'Unknown error'}`, type: 'error' });
+    } finally {
+      setIsImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <div className="min-h-screen pb-20 animate-fade-in-up">
       {modalOpen && <TransactionModal onClose={() => setModalOpen(false)} onSave={onAdd} />}
-      
+
       {/* Summary Card */}
       <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 p-4 sm:p-6">
         <div className="max-w-7xl mx-auto">
@@ -194,20 +282,19 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
                 className="w-full pl-9 pr-3 py-2 border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-black text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-yellow-400 outline-none font-bold uppercase text-xs"
               />
             </div>
-            
+
             <div className="flex gap-2 overflow-x-auto pb-1">
               <div className="flex bg-gray-100 dark:bg-gray-900 p-0.5 flex-shrink-0">
-                {(['ALL', 'INCOME', 'EXPENSE'] as const).map(type => (
+                {(['ALL', 'INCOME', 'EXPENSE', 'MISSING_INFO'] as const).map(type => (
                   <button
                     key={type}
                     onClick={() => setFilterType(type)}
-                    className={`px-2.5 py-1.5 text-[10px] font-bold uppercase transition-all whitespace-nowrap ${
-                      filterType === type
-                        ? 'bg-yellow-400 text-black'
-                        : 'text-black dark:text-white hover:text-yellow-400'
-                    }`}
+                    className={`px-2.5 py-1.5 text-[10px] font-bold uppercase transition-all whitespace-nowrap ${filterType === type
+                      ? type === 'MISSING_INFO' ? 'bg-orange-400 text-black' : 'bg-yellow-400 text-black'
+                      : 'text-black dark:text-white hover:text-yellow-400'
+                      }`}
                   >
-                    {type}
+                    {type === 'MISSING_INFO' ? '⚠ MISSING' : type}
                   </button>
                 ))}
               </div>
@@ -220,24 +307,34 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
                 <option value="TODAY">TODAY</option>
                 <option value="THIS_WEEK">WEEK</option>
                 <option value="THIS_MONTH">MONTH</option>
-                <option value="LAST_3M">3M</option>
-                <option value="CUSTOM">ALL</option>
+                <option value="LAST_3M">3 MONTHS</option>
+                <option value="ALL_TIME">ALL TIME</option>
+                <option value="CUSTOM">CUSTOM</option>
               </select>
 
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`p-1.5 text-xs font-bold uppercase flex items-center gap-1 transition-colors border-2 flex-shrink-0 ${
-                  showFilters
-                    ? 'bg-cyan-500 border-cyan-500 text-black'
-                    : 'bg-white dark:bg-black border-gray-200 dark:border-gray-800 text-black dark:text-white'
-                }`}
+                className={`p-1.5 text-xs font-bold uppercase flex items-center gap-1 transition-colors border-2 flex-shrink-0 ${showFilters
+                  ? 'bg-cyan-500 border-cyan-500 text-black'
+                  : 'bg-white dark:bg-black border-gray-200 dark:border-gray-800 text-black dark:text-white'
+                  }`}
               >
                 <Filter size={14} />
               </button>
-              
+
               <Button onClick={() => setModalOpen(true)} className="whitespace-nowrap bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase flex-shrink-0 text-[10px] px-2 py-1.5">
                 <div className="flex items-center gap-1">
                   <Plus size={14} /> ADD
+                </div>
+              </Button>
+
+              {/* Import from Statement button */}
+              <Button
+                onClick={() => { setShowImportModal(true); setImportStatus(null); }}
+                className="whitespace-nowrap bg-cyan-500 hover:bg-cyan-600 text-black font-bold uppercase flex-shrink-0 text-[10px] px-2 py-1.5"
+              >
+                <div className="flex items-center gap-1">
+                  <Scan size={14} /> IMPORT
                 </div>
               </Button>
             </div>
@@ -252,18 +349,17 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
                     <button
                       key={key}
                       onClick={() => toggleCategory(key)}
-                      className={`px-2 py-1 text-[10px] font-bold uppercase border-2 transition-colors flex items-center gap-1 ${
-                        selectedCategories.includes(key)
-                          ? 'bg-cyan-500 border-cyan-500 text-black'
-                          : 'bg-white dark:bg-black border-gray-200 dark:border-gray-800 text-black dark:text-white'
-                      }`}
+                      className={`px-2 py-1 text-[10px] font-bold uppercase border-2 transition-colors flex items-center gap-1 ${selectedCategories.includes(key)
+                        ? 'bg-cyan-500 border-cyan-500 text-black'
+                        : 'bg-white dark:bg-black border-gray-200 dark:border-gray-800 text-black dark:text-white'
+                        }`}
                     >
                       <span className="text-xs">{value.icon}</span> {key}
                     </button>
                   ))}
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2">SORT BY</h3>
                 <div className="flex flex-wrap gap-1.5">
@@ -276,11 +372,10 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
                     <button
                       key={opt.value}
                       onClick={() => setSortBy(opt.value as SortBy)}
-                      className={`px-2.5 py-1 text-[10px] font-bold uppercase border-2 transition-colors ${
-                        sortBy === opt.value
-                          ? 'bg-white text-black border-white'
-                          : 'bg-white dark:bg-black border-gray-200 dark:border-gray-800 text-black dark:text-white'
-                      }`}
+                      className={`px-2.5 py-1 text-[10px] font-bold uppercase border-2 transition-colors ${sortBy === opt.value
+                        ? 'bg-white text-black border-white'
+                        : 'bg-white dark:bg-black border-gray-200 dark:border-gray-800 text-black dark:text-white'
+                        }`}
                     >
                       {opt.label}
                     </button>
@@ -304,7 +399,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
               </div>
 
               <div className="space-y-2">
-                {dayTransactions.map((txn) => {
+                {(dayTransactions as Transaction[]).map((txn) => {
                   const categoryInfo = getCategoryInfo(txn.category || 'OTHER');
                   const isExpense = txn.type === TransactionType.PERSONAL;
 
@@ -341,15 +436,24 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
                                   🚫
                                 </span>
                               )}
+                              {isMissingDate(txn) && (
+                                <span className="text-[8px] bg-orange-400 text-black px-1 py-0.5 font-black uppercase">
+                                  ⚠ MISSING DATE
+                                </span>
+                              )}
+                              {(!txn.source || txn.source === '') && (
+                                <span className="text-[8px] bg-orange-400 text-black px-1 py-0.5 font-black uppercase">
+                                  ⚠ NO SOURCE
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
 
                         <div className="text-right flex-shrink-0">
                           <p
-                            className={`text-sm font-black ${
-                              isExpense ? 'text-black dark:text-white' : 'text-green-500 dark:text-green-400'
-                            }`}
+                            className={`text-sm font-black ${isExpense ? 'text-black dark:text-white' : 'text-green-500 dark:text-green-400'
+                              }`}
                           >
                             {isExpense ? '-' : '+'} {formatCurrency(txn.amount)}
                           </p>
@@ -399,9 +503,9 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
             <div className="space-y-6">
               <div className="text-center">
                 <div className={`w-16 h-16 mx-auto flex items-center justify-center mb-3`}
-                     style={{ backgroundColor: `${getCategoryInfo(selectedTransaction.category || 'OTHER').color}20` }}
+                  style={{ backgroundColor: `${getCategoryInfo(selectedTransaction.category || 'OTHER').color}20` }}
                 >
-                   <span className="text-3xl">{getCategoryInfo(selectedTransaction.category || 'OTHER').icon}</span>
+                  <span className="text-3xl">{getCategoryInfo(selectedTransaction.category || 'OTHER').icon}</span>
                 </div>
                 <p className="text-3xl font-black text-black dark:text-white">
                   {selectedTransaction.type === TransactionType.PERSONAL ? '-' : '+'}
@@ -423,42 +527,40 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
                   <span className="text-gray-500 font-bold uppercase text-xs">STATUS</span>
                   <span className="font-black text-black dark:text-white uppercase">{selectedTransaction.status.toLowerCase()}</span>
                 </div>
-                
+
                 {/* Tax Classification */}
                 <div className="pt-2 border-t-2 border-gray-200 dark:border-gray-800">
                   <p className="text-gray-500 font-bold uppercase text-xs mb-2">TAX CLASSIFICATION</p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => {
-                        const updated = {...selectedTransaction, type: TransactionType.BUSINESS, estimatedTax: selectedTransaction.amount * 0.1};
+                        const updated = { ...selectedTransaction, type: TransactionType.BUSINESS, estimatedTax: selectedTransaction.amount * 0.1 };
                         onUpdate && onUpdate(updated);
                         setSelectedTransaction(updated);
                       }}
-                      className={`flex-1 px-3 py-2 text-xs font-bold uppercase transition flex items-center justify-center gap-2 ${
-                        selectedTransaction.type === TransactionType.BUSINESS
-                          ? 'bg-green-500 text-black'
-                          : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-green-500 hover:text-black'
-                      }`}
+                      className={`flex-1 px-3 py-2 text-xs font-bold uppercase transition flex items-center justify-center gap-2 ${selectedTransaction.type === TransactionType.BUSINESS
+                        ? 'bg-green-500 text-black'
+                        : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-green-500 hover:text-black'
+                        }`}
                     >
                       <DollarSign size={16} /> TAXABLE
                     </button>
                     <button
                       onClick={() => {
-                        const updated = {...selectedTransaction, type: TransactionType.REFUND, estimatedTax: 0};
+                        const updated = { ...selectedTransaction, type: TransactionType.REFUND, estimatedTax: 0 };
                         onUpdate && onUpdate(updated);
                         setSelectedTransaction(updated);
                       }}
-                      className={`flex-1 px-3 py-2 text-xs font-bold uppercase transition flex items-center justify-center gap-2 ${
-                        selectedTransaction.type === TransactionType.REFUND || (selectedTransaction.type === TransactionType.PERSONAL && selectedTransaction.amount > 0)
-                          ? 'bg-red-500 text-white'
-                          : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-red-500 hover:text-white'
-                      }`}
+                      className={`flex-1 px-3 py-2 text-xs font-bold uppercase transition flex items-center justify-center gap-2 ${selectedTransaction.type === TransactionType.REFUND || (selectedTransaction.type === TransactionType.PERSONAL && selectedTransaction.amount > 0)
+                        ? 'bg-red-500 text-white'
+                        : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-red-500 hover:text-white'
+                        }`}
                     >
                       <Ban size={16} /> NON-TAXABLE
                     </button>
                   </div>
                 </div>
-                
+
                 {selectedTransaction.estimatedTax > 0 && (
                   <div className="flex justify-between pt-2 border-t-2 border-gray-200 dark:border-gray-800">
                     <span className="text-gray-500 font-bold uppercase text-xs">ESTIMATED TAX</span>
@@ -474,7 +576,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
               </div>
 
               <div className="flex gap-3">
-                <button 
+                <button
                   onClick={() => {
                     if (selectedTransaction.referenceId) {
                       alert('Receipt downloaded successfully!');
@@ -487,6 +589,87 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
                   DOWNLOAD RECEIPT
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Import Statement Modal ─────────────────────────────────────────── */}
+      {showImportModal && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => !isImporting && setShowImportModal(false)}
+        >
+          <div
+            className="bg-white dark:bg-black border-4 border-cyan-500 w-full max-w-md p-6 shadow-2xl animate-fade-in-up"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h3 className="text-lg font-black uppercase text-black dark:text-white">📸 Import Statement</h3>
+                <p className="text-[10px] text-gray-500 font-bold uppercase mt-0.5">AI-powered • Gemini Vision</p>
+              </div>
+              {!isImporting && (
+                <button onClick={() => setShowImportModal(false)} className="text-gray-400 hover:text-black dark:hover:text-white">
+                  <X size={20} />
+                </button>
+              )}
+            </div>
+
+            {/* Upload area */}
+            <div
+              className="border-2 border-dashed border-cyan-500 p-8 text-center cursor-pointer hover:bg-cyan-50 dark:hover:bg-cyan-950 transition mb-4"
+              onClick={() => !isImporting && fileInputRef.current?.click()}
+            >
+              {isImporting ? (
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+                  <p className="text-xs font-bold uppercase text-cyan-600">Analyzing with Gemini...</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-2">
+                  <Upload size={32} className="text-cyan-500" />
+                  <p className="text-sm font-black uppercase text-black dark:text-white">Click to Upload</p>
+                  <p className="text-[10px] text-gray-500 font-bold uppercase">PDF · PNG · JPG · JPEG · WEBP</p>
+                </div>
+              )}
+            </div>
+
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/pdf,image/png,image/jpeg,image/jpg,image/webp"
+              className="hidden"
+              onChange={e => {
+                const file = e.target.files?.[0];
+                if (file) handleImportStatement(file);
+              }}
+            />
+
+            {/* Status message */}
+            {importStatus && (
+              <div className={`p-3 border-l-4 text-xs font-bold ${importStatus.type === 'success' ? 'border-green-500 bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300' :
+                importStatus.type === 'error' ? 'border-red-500 bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300' :
+                  'border-cyan-500 bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300'
+                }`}>
+                {importStatus.msg}
+              </div>
+            )}
+
+            {/* Tips */}
+            <div className="mt-4 space-y-1">
+              <p className="text-[9px] font-bold uppercase text-gray-400 tracking-wider">What works best</p>
+              <ul className="text-[9px] text-gray-500 font-bold space-y-0.5 ml-2">
+                <li>• ALL Indian banks supported (HDFC, ICICI, SBI, Axis, Kotak, PNB, BOB, etc.)</li>
+                <li>• PDF bank statements (multi-page supported)</li>
+                <li>• Screenshots of transaction tables from mobile banking apps</li>
+                <li>• Images with Date, Description, Amount columns visible</li>
+                <li>• UPI, NEFT, IMPS, RTGS transactions auto-detected</li>
+                <li>• Credits auto-classified as Business Income (taxable)</li>
+                <li>• Debits auto-classified as Personal Expense</li>
+              </ul>
             </div>
           </div>
         </div>

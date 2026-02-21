@@ -1,4 +1,4 @@
-// Indian Income Tax Slabs for FY 2025-26 (AY 2026-27)
+// Indian Income Tax Slabs for FY 2025-26 (AY 2026-27) - New Tax Regime
 
 export interface TaxSlab {
   min: number;
@@ -7,14 +7,15 @@ export interface TaxSlab {
   label: string;
 }
 
-// New Tax Regime (Default from FY 2023-24)
+// New Tax Regime FY 2025-26
 export const NEW_TAX_REGIME_2026: TaxSlab[] = [
-  { min: 0, max: 300000, rate: 0, label: 'Up to ₹3L' },
-  { min: 300000, max: 700000, rate: 5, label: '₹3L - ₹7L' },
-  { min: 700000, max: 1000000, rate: 10, label: '₹7L - ₹10L' },
-  { min: 1000000, max: 1200000, rate: 15, label: '₹10L - ₹12L' },
-  { min: 1200000, max: 1500000, rate: 20, label: '₹12L - ₹15L' },
-  { min: 1500000, max: null, rate: 30, label: 'Above ₹15L' }
+  { min: 0, max: 400000, rate: 0, label: 'Up to ₹4L' },
+  { min: 400000, max: 800000, rate: 5, label: '₹4L - ₹8L' },
+  { min: 800000, max: 1200000, rate: 10, label: '₹8L - ₹12L' },
+  { min: 1200000, max: 1600000, rate: 15, label: '₹12L - ₹16L' },
+  { min: 1600000, max: 2000000, rate: 20, label: '₹16L - ₹20L' },
+  { min: 2000000, max: 2400000, rate: 25, label: '₹20L - ₹24L' },
+  { min: 2400000, max: null, rate: 30, label: 'Above ₹24L' }
 ];
 
 // Old Tax Regime (Optional)
@@ -28,6 +29,9 @@ export const OLD_TAX_REGIME_2026: TaxSlab[] = [
 export interface TaxCalculationResult {
   totalIncome: number;
   taxableIncome: number;
+  standardDeduction: number;
+  taxBeforeRebate: number;
+  rebate87A: number;
   taxAmount: number;
   effectiveRate: number;
   slab: TaxSlab;
@@ -45,9 +49,30 @@ export function calculateTax(
 ): TaxCalculationResult {
   const slabs = regime === 'NEW' ? NEW_TAX_REGIME_2026 : OLD_TAX_REGIME_2026;
   
-  // Standard deduction of 75,000 in new regime (FY 2025-26)
+  // Standard deduction: ₹75,000 for salaried/pensioners in New Regime
   const standardDeduction = regime === 'NEW' ? 75000 : 50000;
+  
+  // Taxable income after standard deduction (no other deductions in new regime)
   const taxableIncome = Math.max(0, annualIncome - standardDeduction - (regime === 'OLD' ? deductions : 0));
+  
+  // If taxable income is below ₹4 lakh, no tax
+  if (taxableIncome <= 400000) {
+    return {
+      totalIncome: annualIncome,
+      taxableIncome,
+      standardDeduction,
+      taxBeforeRebate: 0,
+      rebate87A: 0,
+      taxAmount: 0,
+      effectiveRate: 0,
+      slab: slabs[0],
+      slabLabel: slabs[0].label,
+      cess: 0,
+      totalTax: 0,
+      regime,
+      breakdown: []
+    };
+  }
   
   let taxAmount = 0;
   let currentSlab: TaxSlab = slabs[0];
@@ -75,14 +100,22 @@ export function calculateTax(
     }
   }
   
-  // Add 4% Health & Education Cess
-  const cess = taxAmount * 0.04;
-  const totalTax = taxAmount + cess;
+  // Section 87A Rebate: Up to ₹60,000 if taxable income ≤ ₹12 lakh
+  // This makes income up to ~₹12.75L effectively tax-free for salaried (with ₹75k standard deduction)
+  const rebate87A = (taxableIncome <= 1200000 && regime === 'NEW') ? Math.min(taxAmount, 60000) : 0;
+  const taxAfterRebate = Math.max(0, taxAmount - rebate87A);
+  
+  // Add 4% Health & Education Cess (only if tax > 0 after rebate)
+  const cess = taxAfterRebate * 0.04;
+  const totalTax = taxAfterRebate + cess;
   
   return {
     totalIncome: annualIncome,
     taxableIncome,
-    taxAmount,
+    standardDeduction,
+    taxBeforeRebate: taxAmount,
+    rebate87A,
+    taxAmount: taxAfterRebate,
     effectiveRate: annualIncome > 0 ? (totalTax / annualIncome) * 100 : 0,
     slab: currentSlab,
     slabLabel: currentSlab.label,

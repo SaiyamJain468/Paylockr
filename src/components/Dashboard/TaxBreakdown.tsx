@@ -43,8 +43,11 @@ export const TaxBreakdown: React.FC<TaxBreakdownProps> = ({ taxCalc, vaultBalanc
             DEDUCTIONS APPLIED
           </p>
           <div className="space-y-1">
-            <div className="flex justify-between">
-              <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Standard Deduction</span>
+            <div className="flex justify-between items-center">
+              <div>
+                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Standard Deduction</span>
+                <span className={`ml-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>(No tax up to ₹4L)</span>
+              </div>
               <span className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>₹75,000</span>
             </div>
           </div>

@@ -1,14 +1,15 @@
-import { 
-  User, 
-  Transaction, 
-  Expense, 
-  Invoice, 
-  VaultEntry, 
-  BankAccount, 
+import {
+  User,
+  Transaction,
+  Expense,
+  Invoice,
+  VaultEntry,
+  BankAccount,
   VaultDocument,
   TransactionType,
   TransactionStatus
 } from '../types';
+import { calculateTax } from './taxCalculator';
 
 export interface ClassifiedIncome {
   id: string;
@@ -115,12 +116,12 @@ export function generateUserData(userId: string) {
   const classifiedIncomes: ClassifiedIncome[] = [];
 
   const today = new Date();
-  
+
   // 1. Generate Historical Income (Last 12 Months - More Data)
   // Freelancers have irregular income. We simulate this.
   let totalIncomeAmount = 0;
   let cumulativeIncome = 0; // Track cumulative for progressive tax
-  
+
   for (let i = 0; i < 12; i++) {
     const monthDate = new Date(today);
     monthDate.setMonth(today.getMonth() - i - 1); // Ensure past months
@@ -128,19 +129,19 @@ export function generateUserData(userId: string) {
 
     // 1-2 payments per month for realistic freelancer income
     const numPayments = getRandomAmount(1, 2);
-    
+
     for (let j = 0; j < numPayments; j++) {
       const isInternational = Math.random() > 0.7;
       const client = getRandomItem(CLIENTS);
       const receivingBank = Math.random() > 0.5 ? 'HDFC Bank - Savings' : 'ICICI Bank - Current';
       const paymentMethods = isInternational ? ['Wire Transfer', 'PayPal', 'Wise'] : ['NEFT', 'RTGS', 'UPI', 'IMPS'];
       const paymentMethod = getRandomItem(paymentMethods);
-      
+
       // Realistic income: 50k to 270k per transaction
-      const baseAmount = getRandomAmount(50000, 270000); 
+      const baseAmount = getRandomAmount(50000, 270000);
       // Make amount look realistic (e.g. 45000 instead of 45123)
-      const amount = Math.round(baseAmount / 500) * 500; 
-      
+      const amount = Math.round(baseAmount / 500) * 500;
+
       const txnId = `TXN-INC-${userId}-${i}-${j}`;
       const txnDate = new Date(monthDate);
       txnDate.setDate(txnDate.getDate() + j * 5); // Spread out
@@ -148,33 +149,17 @@ export function generateUserData(userId: string) {
       // Calculate tax based on cumulative income and tax slabs
       cumulativeIncome += amount;
       const projectedAnnual = (cumulativeIncome / (i + 1)) * 12; // Project to annual
-      
-      // Calculate tax using actual slabs (New Regime 2026)
-      let taxOnIncome = 0;
-      const taxableIncome = Math.max(0, projectedAnnual - 75000); // Standard deduction
-      
-      if (taxableIncome > 1500000) {
-        taxOnIncome = (300000 * 0.05) + (300000 * 0.10) + (200000 * 0.15) + (300000 * 0.20) + ((taxableIncome - 1500000) * 0.30);
-      } else if (taxableIncome > 1200000) {
-        taxOnIncome = (300000 * 0.05) + (300000 * 0.10) + (200000 * 0.15) + ((taxableIncome - 1200000) * 0.20);
-      } else if (taxableIncome > 1000000) {
-        taxOnIncome = (300000 * 0.05) + (300000 * 0.10) + ((taxableIncome - 1000000) * 0.15);
-      } else if (taxableIncome > 700000) {
-        taxOnIncome = (300000 * 0.05) + ((taxableIncome - 700000) * 0.10);
-      } else if (taxableIncome > 300000) {
-        taxOnIncome = (taxableIncome - 300000) * 0.05;
-      }
-      
-      // Add 4% cess
-      taxOnIncome = taxOnIncome * 1.04;
+
+      // Use the proper tax calculator
+      const taxCalc = calculateTax(projectedAnnual, 0, 'NEW');
       
       // Proportional tax for this transaction
-      const estimatedTax = Math.round((amount / projectedAnnual) * taxOnIncome);
+      const estimatedTax = Math.round((amount / projectedAnnual) * taxCalc.totalTax);
 
       const incomeTxn: Transaction = {
         id: txnId,
         userId,
-        type: TransactionType.BUSINESS, 
+        type: TransactionType.BUSINESS,
         amount: amount,
         category: 'FREELANCE',
         description: `Payment from ${client.name} - ${isInternational ? 'USD Transfer' : 'Invoice Payment'}`,
@@ -275,7 +260,7 @@ export function generateUserData(userId: string) {
     const expenseTxn: Transaction = {
       id: txnId,
       userId,
-      type: TransactionType.PERSONAL, 
+      type: TransactionType.PERSONAL,
       amount: amount,
       category: categoryKey,
       description: `Payment to ${merchant}`,
@@ -317,7 +302,7 @@ export function generateUserData(userId: string) {
     const amount = getRandomAmount(30000, 80000);
     const date = new Date(today);
     date.setDate(date.getDate() - getRandomAmount(1, 10));
-    
+
     invoices.push({
       id: `INV-PENDING-${m}`,
       userId,
@@ -329,11 +314,11 @@ export function generateUserData(userId: string) {
       clientName: client.name,
       clientEmail: client.email,
       items: [{
-        id: '1', 
+        id: '1',
         description: 'Consulting Retainer',
-        quantity: 1, 
-        rate: amount, 
-        amount: amount, 
+        quantity: 1,
+        rate: amount,
+        amount: amount,
         total: amount
       }],
       subtotal: amount,
@@ -380,7 +365,7 @@ export function generateUserData(userId: string) {
   const taxCalendar: TaxCalendarEntry[] = [];
   const currentYear = today.getFullYear();
   const totalTaxLiability = vaultBalance;
-  
+
   // Quarterly estimated tax payments
   const quarters = [
     { q: 'Q1', month: 5, day: 15, desc: 'Q1 (Apr-Jun)' },
@@ -393,7 +378,7 @@ export function generateUserData(userId: string) {
     const dueDate = new Date(q.year || currentYear, q.month, q.day);
     const quarterAmount = Math.round(totalTaxLiability / 4);
     const isPast = dueDate < today;
-    
+
     taxCalendar.push({
       id: `TAX-Q${idx + 1}-${userId}`,
       userId,
@@ -507,7 +492,7 @@ export function generateUserData(userId: string) {
       return t.type === TransactionType.BUSINESS && tDate.getMonth() === today.getMonth() - 1;
     })
     .reduce((sum, t) => sum + t.amount, 0);
-  
+
   if (lastMonthIncome > 0) {
     const growth = Math.round(((recentIncome - lastMonthIncome) / lastMonthIncome) * 100);
     aiInsights.push({
@@ -601,6 +586,10 @@ const initializeUserData = () => {
       // Restore dates
       Object.keys(parsed).forEach(userId => {
         const data = parsed[userId];
+        // Skip admin data from localStorage - always regenerate empty
+        if (userId === 'admin') {
+          return;
+        }
         data.transactions = data.transactions.map((t: any) => ({ ...t, date: new Date(t.date) }));
         data.expenses = data.expenses.map((e: any) => ({ ...e, date: new Date(e.date) }));
         data.invoices = data.invoices.map((i: any) => ({ ...i, date: new Date(i.date), dueDate: new Date(i.dueDate) }));
@@ -615,17 +604,58 @@ const initializeUserData = () => {
         }
         ALL_USER_DATA[userId] = data;
       });
-      return;
     } catch (e) {
       console.error('Failed to load stored data', e);
     }
   }
-  
+
   // Generate fresh data
   DEMO_USERS.forEach(user => {
-    ALL_USER_DATA[user.id] = generateUserData(user.id);
+    // Only generate dummy data for saiyam, admin will add transactions manually
+    if (user.id === 'saiyam') {
+      ALL_USER_DATA[user.id] = generateUserData(user.id);
+    } else if (user.id === 'admin') {
+      // Initialize empty data structure for admin
+      ALL_USER_DATA[user.id] = {
+        transactions: [],
+        expenses: [],
+        invoices: [],
+        vaultEntries: [],
+        classifiedIncomes: [],
+        bankAccounts: [
+          {
+            id: `BANK-${user.id}-1`,
+            userId: user.id,
+            bankName: 'HDFC Bank',
+            accountNumber: 'XXXX0001',
+            accountHolder: 'Admin User',
+            accountType: 'SAVINGS',
+            balance: 0,
+            ifscCode: 'HDFC0000240',
+            lastUpdated: new Date(),
+            isPrimary: true
+          }
+        ],
+        vaultDocuments: [],
+        taxCalendar: [],
+        aiInsights: [],
+        stats: {
+          totalIncome: 0,
+          totalExpense: 0,
+          vaultBalance: 0,
+          availableBalance: 0,
+          transactionCount: 0,
+          expenseCount: 0,
+          invoiceCount: 0,
+          paidInvoices: 0,
+          netTaxableIncome: 0,
+          projectedTaxLiability: 0,
+          deductibleExpenses: 0
+        }
+      };
+    }
   });
-  
+
   // Save to localStorage
   localStorage.setItem('PAYLOCKR_USER_DATA', JSON.stringify(ALL_USER_DATA));
 };
@@ -639,6 +669,50 @@ export function authenticateUser(email: string, password: string) {
 }
 
 export function getUserData(userId: string) {
+  // Always return empty data for admin
+  if (userId === 'admin') {
+    if (!ALL_USER_DATA[userId]) {
+      ALL_USER_DATA[userId] = {
+        transactions: [],
+        expenses: [],
+        invoices: [],
+        vaultEntries: [],
+        classifiedIncomes: [],
+        bankAccounts: [
+          {
+            id: `BANK-${userId}-1`,
+            userId: userId,
+            bankName: 'HDFC Bank',
+            accountNumber: 'XXXX0001',
+            accountHolder: 'Admin User',
+            accountType: 'SAVINGS',
+            balance: 0,
+            ifscCode: 'HDFC0000240',
+            lastUpdated: new Date(),
+            isPrimary: true
+          }
+        ],
+        vaultDocuments: [],
+        taxCalendar: [],
+        aiInsights: [],
+        stats: {
+          totalIncome: 0,
+          totalExpense: 0,
+          vaultBalance: 0,
+          availableBalance: 0,
+          transactionCount: 0,
+          expenseCount: 0,
+          invoiceCount: 0,
+          paidInvoices: 0,
+          netTaxableIncome: 0,
+          projectedTaxLiability: 0,
+          deductibleExpenses: 0
+        }
+      };
+    }
+    return ALL_USER_DATA[userId];
+  }
+  
   if (!ALL_USER_DATA[userId]) {
     ALL_USER_DATA[userId] = generateUserData(userId);
     localStorage.setItem('PAYLOCKR_USER_DATA', JSON.stringify(ALL_USER_DATA));
@@ -646,9 +720,65 @@ export function getUserData(userId: string) {
   return ALL_USER_DATA[userId];
 }
 
+/**
+ * Persist new transactions into the in-memory data store AND localStorage.
+ * Call this whenever transactions are imported so they survive re-renders
+ * and auth-state-change events that would reload from getUserData().
+ */
+export function saveTransactions(userId: string, newTransactions: Transaction[]): void {
+  if (!newTransactions.length) return;
+
+  if (!ALL_USER_DATA[userId]) {
+    ALL_USER_DATA[userId] = generateUserData(userId);
+  }
+
+  const data = ALL_USER_DATA[userId];
+  const existingIds = new Set(data.transactions.map((t: Transaction) => t.id));
+  const toAdd = newTransactions.filter(t => !existingIds.has(t.id));
+  data.transactions = [...toAdd, ...data.transactions];
+
+  // Sort by date for accurate calculations
+  data.transactions.sort((a, b) => {
+    const dateA = a.date instanceof Date ? a.date.getTime() : new Date(a.date).getTime();
+    const dateB = b.date instanceof Date ? b.date.getTime() : new Date(b.date).getTime();
+    return dateB - dateA;
+  });
+
+  // Recalculate with null safety
+  const totalIncome = data.transactions
+    .filter((t: Transaction) => t.type === 'Business Income' || t.type === TransactionType.BUSINESS || t.type === 'Refund' || t.type === TransactionType.REFUND)
+    .reduce((s: number, t: Transaction) => s + (t.amount || 0), 0);
+  const totalExpense = data.transactions
+    .filter((t: Transaction) => t.type === 'Personal Transfer' || t.type === TransactionType.PERSONAL)
+    .reduce((s: number, t: Transaction) => s + (t.amount || 0), 0);
+  const totalTaxLiability = data.transactions
+    .filter((t: Transaction) => t.type === 'Business Income' || t.type === TransactionType.BUSINESS)
+    .reduce((s: number, t: Transaction) => s + (t.estimatedTax || 0), 0);
+
+  data.stats = {
+    ...data.stats,
+    totalIncome,
+    totalExpense,
+    netBalance: totalIncome - totalExpense,
+    projectedTaxLiability: totalTaxLiability,
+    transactionCount: data.transactions.length,
+    vaultBalance: totalTaxLiability,
+  };
+
+  ALL_USER_DATA[userId] = data;
+
+  try {
+    localStorage.setItem('PAYLOCKR_USER_DATA', JSON.stringify(ALL_USER_DATA));
+    console.log(`[saveTransactions] ${toAdd.length} new txns. Total: ${data.transactions.length}, Income: ₹${totalIncome.toLocaleString()}, Tax: ₹${totalTaxLiability.toLocaleString()}`);
+  } catch (e) {
+    console.warn('[saveTransactions] localStorage write failed:', e);
+  }
+}
+
+
 export function getDashboardStats(userId: string) {
   const data = getUserData(userId);
-  
+
   return {
     ...data.stats,
     bankAccounts: data.bankAccounts,
@@ -664,7 +794,7 @@ function getMonthlyBreakdown(transactions: Transaction[]) {
   for (let i = 5; i >= 0; i--) {
     const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const monthKey = monthDate.toLocaleDateString('en-IN', { month: 'short' });
-    
+
     // Initialize
     breakdown[monthKey] = { name: monthKey, income: 0, tax: 0 };
 

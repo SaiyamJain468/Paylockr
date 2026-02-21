@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ViewState, Transaction, Notification, TaxSettings, TaxDeadline, Invoice, Expense, VaultEntry, BankAccount, VaultDocument, TaxCalendarEntry, AIInsight, ClassifiedIncome } from './types';
 import { MOCK_TAX_DEADLINES, generateNotifications } from './constants';
-import { getUserData, getDashboardStats, saveTransactions } from './utils/multiUserUnifiedData';
+import { getUserData, getDashboardStats } from './utils/multiUserUnifiedData';
 import { CheckCircle, AlertTriangle, Info, X } from 'lucide-react';
 
 // Layout
@@ -65,8 +65,8 @@ export default function App() {
     const saved = localStorage.getItem('darkMode');
     return saved ? JSON.parse(saved) : true;
   });
-  const [toast, setToast] = useState<{ msg: string, type: 'success' | 'error' | 'info' } | null>(null);
-
+  const [toast, setToast] = useState<{msg: string, type: 'success'|'error'|'info'} | null>(null);
+  
   const [financialData, setFinancialData] = useState<{
     transactions: Transaction[];
     expenses: Expense[];
@@ -82,13 +82,13 @@ export default function App() {
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [settings, setSettings] = useState<TaxSettings>({
-    regime: 'New',
-    deductions80C: true,
-    deductions80D: false,
-    annualDeductionAmount: 150000,
+  const [settings, setSettings] = useState<TaxSettings>({ 
+    regime: 'New', 
+    deductions80C: true, 
+    deductions80D: false, 
+    annualDeductionAmount: 150000, 
     mode: 'Balanced',
-    targetVaultAmount: 150000
+    targetVaultAmount: 150000 
   });
 
   useEffect(() => {
@@ -106,7 +106,7 @@ export default function App() {
         const userId = user.id || 'saiyam';
         const userData = getUserData(userId);
         const dashStats = getDashboardStats(userId);
-
+        
         setFinancialData({
           transactions: userData.transactions,
           expenses: userData.expenses,
@@ -119,7 +119,7 @@ export default function App() {
           aiInsights: userData.aiInsights || [],
           stats: dashStats
         });
-
+        
         setNotifications(generateNotifications(userData.transactions));
       } catch (e) {
         console.error("Failed to load user data", e);
@@ -129,7 +129,7 @@ export default function App() {
     const checkSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
-
+        
         if (!mounted) return;
 
         if (data?.session) {
@@ -172,7 +172,7 @@ export default function App() {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [view]);
+  }, []); 
 
   const handleLoginSuccess = () => {
     const storedData = sessionStorage.getItem('userData');
@@ -180,11 +180,11 @@ export default function App() {
       try {
         const user = JSON.parse(storedData);
         setSession({ user });
-
+        
         const userId = user.id || 'saiyam';
         const userData = getUserData(userId);
         const dashStats = getDashboardStats(userId);
-
+        
         setFinancialData({
           transactions: userData.transactions,
           expenses: userData.expenses,
@@ -197,7 +197,7 @@ export default function App() {
           aiInsights: userData.aiInsights || [],
           stats: dashStats
         });
-
+        
         setNotifications(generateNotifications(userData.transactions));
 
         setView('DASHBOARD');
@@ -208,9 +208,6 @@ export default function App() {
         setToast({ msg: 'Session expired. Please login again.', type: 'error' });
         setView('LOGIN');
       }
-    } else {
-      setToast({ msg: 'Login failed. Please try again.', type: 'error' });
-      setView('LOGIN');
     }
   };
 
@@ -230,27 +227,6 @@ export default function App() {
       transactions: [t, ...prev.transactions]
     }) : null);
     setToast({ msg: 'Transaction added', type: 'success' });
-  };
-
-  // Bulk import — adds ALL transactions in ONE state update AND persists to data layer
-  const addTransactions = (newTxns: Transaction[]) => {
-    if (!newTxns.length) return;
-    // Step 1: Persist to ALL_USER_DATA + localStorage FIRST
-    // This ensures they survive any auth-state-change or re-render that reloads getUserData()
-    const uid = session?.user?.id || 'saiyam';
-    saveTransactions(uid, newTxns);
-
-    // Step 2: Update React state with merged list from the now-updated data layer
-    const freshData = getUserData(uid);
-    setFinancialData(prev => prev ? ({
-      ...prev,
-      transactions: freshData.transactions,
-      stats: {
-        ...prev.stats,
-        ...freshData.stats,
-      }
-    }) : null);
-    setToast({ msg: `✅ ${newTxns.length} transactions imported`, type: 'success' });
   };
 
   const markNotificationAsRead = (id: string) => {
@@ -281,16 +257,16 @@ export default function App() {
       <>
         {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
         {view === 'SIGNUP' ? (
-          <SignUp
+          <SignUp 
             onSignUp={handleLoginSuccess}
             onNavigateToLogin={() => setView('LOGIN')}
             isDarkMode={isDarkMode}
           />
         ) : (
-          <Login
+          <Login 
             onLogin={handleLoginSuccess}
             onNavigateToSignup={() => setView('SIGNUP')}
-            isDarkMode={isDarkMode}
+            isDarkMode={isDarkMode} 
           />
         )}
       </>
@@ -308,18 +284,18 @@ export default function App() {
       <main className="md:ml-64 min-h-screen">
         {view !== 'DASHBOARD' && (
           <div className="p-4 md:p-8">
-            <Header
-              view={view}
-              session={session}
-              notifications={notifications}
-              setView={setView}
+            <Header 
+              view={view} 
+              session={session} 
+              notifications={notifications} 
+              setView={setView} 
             />
           </div>
         )}
 
         <div className={view === 'DASHBOARD' ? '' : 'px-4 md:px-8 pb-8'}>
           {view === 'DASHBOARD' && (
-            <Dashboard
+            <Dashboard 
               transactions={transactions}
               setCurrentView={setView}
               isDarkMode={isDarkMode}
@@ -335,7 +311,7 @@ export default function App() {
             />
           )}
           {view === 'SMART_TAX_VAULT' && (
-            <SmartTaxVault
+            <SmartTaxVault 
               userId={userId}
               transactions={transactions}
               classifiedIncomes={classifiedIncomes}
@@ -344,7 +320,7 @@ export default function App() {
               stats={stats}
             />
           )}
-          {view === 'TRANSACTIONS' && <Transactions transactions={transactions} onAdd={addTransaction} onBulkAdd={addTransactions} onUpdate={(updated) => {
+          {view === 'TRANSACTIONS' && <Transactions transactions={transactions} onAdd={addTransaction} onUpdate={(updated) => {
             setFinancialData(prev => prev ? ({
               ...prev,
               transactions: prev.transactions.map(t => t.id === updated.id ? updated : t)
@@ -352,19 +328,19 @@ export default function App() {
             setToast({ msg: 'Transaction updated', type: 'success' });
           }} />}
           {view === 'VAULT' && <Vault documents={vaultDocuments} onAdd={(doc) => {
-            setFinancialData(prev => prev ? ({ ...prev, vaultDocuments: [doc, ...prev.vaultDocuments] }) : null);
+            setFinancialData(prev => prev ? ({...prev, vaultDocuments: [doc, ...prev.vaultDocuments]}) : null);
             setToast({ msg: 'Document uploaded successfully', type: 'success' });
           }} onDelete={(docId) => {
-            setFinancialData(prev => prev ? ({ ...prev, vaultDocuments: prev.vaultDocuments.filter(d => d.id !== docId) }) : null);
+            setFinancialData(prev => prev ? ({...prev, vaultDocuments: prev.vaultDocuments.filter(d => d.id !== docId)}) : null);
             setToast({ msg: 'Document deleted successfully', type: 'success' });
           }} />}
           {view === 'INSIGHTS' && <Insights transactions={transactions} expenses={expenses} totalIncome={stats?.totalIncome} vaultBalance={stats?.vaultBalance} taxLiability={stats?.projectedTaxLiability} />}
           {view === 'NOTIFICATIONS' && <Notifications notifications={notifications} />}
           {view === 'SETTINGS' && <Settings settings={settings} setSettings={setSettings} isDark={isDarkMode} toggleTheme={() => setIsDarkMode(!isDarkMode)} onLogout={handleLogout} />}
           {view === 'INVOICES' && <Invoices invoices={invoices} onShowToast={(msg, type) => setToast({ msg, type })} onDelete={(invId) => {
-            setFinancialData(prev => prev ? ({ ...prev, invoices: prev.invoices.filter(i => i.id !== invId) }) : null);
+            setFinancialData(prev => prev ? ({...prev, invoices: prev.invoices.filter(i => i.id !== invId)}) : null);
           }} onAdd={(inv) => {
-            setFinancialData(prev => prev ? ({ ...prev, invoices: [inv, ...prev.invoices] }) : null);
+            setFinancialData(prev => prev ? ({...prev, invoices: [inv, ...prev.invoices]}) : null);
             const transaction = {
               id: `txn-${inv.id}`,
               amount: inv.amount,
@@ -387,22 +363,22 @@ export default function App() {
               // Recalculate stats with new expense
               const userId = session.user.id || 'saiyam';
               const dashStats = getDashboardStats(userId);
-              return { ...prev, expenses: updatedExpenses, stats: { ...dashStats, totalExpense: dashStats.totalExpense + exp.amount } };
+              return {...prev, expenses: updatedExpenses, stats: {...dashStats, totalExpense: dashStats.totalExpense + exp.amount}};
             });
             setToast({ msg: `Expense added: ₹${exp.amount}`, type: 'success' });
           }} />}
           {view === 'BANK_ACCOUNTS' && <BankAccounts accounts={bankAccounts} onDelete={(accId) => {
-            setFinancialData(prev => prev ? ({ ...prev, bankAccounts: prev.bankAccounts.filter(a => a.id !== accId) }) : null);
+            setFinancialData(prev => prev ? ({...prev, bankAccounts: prev.bankAccounts.filter(a => a.id !== accId)}) : null);
             setToast({ msg: 'Account deleted successfully', type: 'success' });
           }} onUpdate={(acc) => {
-            setFinancialData(prev => prev ? ({ ...prev, bankAccounts: prev.bankAccounts.map(a => a.id === acc.id ? acc : a) }) : null);
+            setFinancialData(prev => prev ? ({...prev, bankAccounts: prev.bankAccounts.map(a => a.id === acc.id ? acc : a)}) : null);
             setToast({ msg: 'Account updated successfully', type: 'success' });
           }} />}
           {view === 'TAX_CALENDAR' && <TaxCalendar userId={userId} />}
           {view === 'TAX_MANAGEMENT' && <TaxManagement stats={stats} />}
           {view === 'HELP' && <Help />}
         </div>
-
+        
         {view !== 'DASHBOARD' && (
           <div className="px-4 md:px-8">
             <Footer />

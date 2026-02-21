@@ -1,0 +1,13 @@
+## TODO  
+
+
+EXPENSES 
+- ADD BUTTON TO EDIT MONTHLY BUDGET WITH ADD EXPENSE 
+
+DOCUMENT VAULT 
+- IF DOCUMENT GETS DELETED OR UPLOADED IT SHOULD WORK ACCORDINGLY 
+
+BANK ACCOUNT 
+- view statement button-  add 2fa for download and bank login must 
+
+expenses 
