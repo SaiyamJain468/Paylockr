@@ -15,11 +15,11 @@ import {
   Mail
 } from 'lucide-react';
 import { Transaction, ViewState, TaxDeadline, TransactionType, TransactionStatus } from '../types';
-import { Stats } from '../components/Dashboard/Stats';
-import { Chart } from '../components/Dashboard/Chart';
-import { QuickActions } from '../components/Dashboard/QuickActions';
-import { TaxBreakdown } from '../components/Dashboard/TaxBreakdown';
-import { TaxSlabExplainer } from '../components/Dashboard/TaxSlabExplainer';
+import { Stats } from '../components/dashboard/Stats';
+import { Chart } from '../components/dashboard/Chart';
+import { QuickActions } from '../components/dashboard/QuickActions';
+import { TaxBreakdown } from '../components/dashboard/TaxBreakdown';
+import { TaxSlabExplainer } from '../components/dashboard/TaxSlabExplainer';
 import { calculateTax, getTaxSlab } from '../utils/taxCalculator';
 import { sendMonthlyReport } from '../services/emailService';
 
