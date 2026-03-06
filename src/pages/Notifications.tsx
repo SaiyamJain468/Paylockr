@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState } from 'react';
 import { CheckCircle, AlertTriangle, Info, X, Bell, Filter } from 'lucide-react';
 import { Notification } from '../types';
@@ -143,3 +143,5 @@ export const Notifications: React.FC<NotificationsProps> = ({ notifications }) =
     </div>
   );
 };
+
+export default Notifications;

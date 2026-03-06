@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState, useMemo } from 'react';
 import { TrendingUp, AlertCircle, Receipt, Camera, Loader2 } from 'lucide-react';
 import { CATEGORIES } from '../utils/multiUserUnifiedData';
@@ -54,7 +54,7 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onAdd }) => {
         alert('❌ Unable to add expense. Please try again.');
       }
     } catch (error) {
-      console.error('Receipt scan error:', error);
+      console.error('Receipt scan error:', error instanceof Error ? error.message : String(error));
       alert('❌ Failed to scan receipt. Try again.');
     } finally {
       setScanning(false);
@@ -450,3 +450,5 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onAdd }) => {
     </div>
   );
 };
+
+export default Expenses;

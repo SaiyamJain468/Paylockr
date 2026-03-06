@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React from 'react';
 import { Calculator, Info } from 'lucide-react';
 import { TaxCalculationResult } from '../../utils/taxCalculator';

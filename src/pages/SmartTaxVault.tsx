@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 // PayLockr's Core Feature: Smart Tax Vault Dashboard
 // Automatic tax saving system for freelancers
 
@@ -646,3 +646,5 @@ export const SmartTaxVault: React.FC<SmartTaxVaultProps> = ({
     </div>
   );
 };
+
+export default SmartTaxVault;

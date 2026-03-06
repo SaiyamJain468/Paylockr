@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState } from 'react';
 import { Plus, Lock, FileText, Trash2, Download, Shield, Eye, Search } from 'lucide-react';
 import { VaultDocument } from '../types';
@@ -347,3 +347,5 @@ export const Vault: React.FC<VaultProps> = ({ documents, onAdd, onDelete }) => {
     </div>
   );
 };
+
+export default Vault;

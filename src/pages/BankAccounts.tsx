@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState } from 'react';
 import { Plus, Eye, EyeOff, Edit2, Trash2, TrendingUp, Landmark, Shield } from 'lucide-react';
 import { BankAccount } from '../types';
@@ -317,3 +317,5 @@ export const BankAccounts: React.FC<BankAccountsProps> = ({ accounts, onDelete, 
     </div>
   );
 };
+
+export default BankAccounts;

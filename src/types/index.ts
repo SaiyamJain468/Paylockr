@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 export type Theme = 'light' | 'dark';
 
 export enum TransactionType {

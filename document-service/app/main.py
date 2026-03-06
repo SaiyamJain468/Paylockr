@@ -37,13 +37,13 @@ from app.utils import (
 )
 from app.pdf_parser import parse_pdf, pdf_pages_to_images
 from app.ocr import extract_text_from_image, extract_text_from_images
-# from app.table_extractor import extract_tables  # Disabled - camelot dependency issues
 from app.normalizer import (
     normalize_text,
     normalize_table_rows,
     llm_normalize,
     NormalizeResult,
 )
+from app.rate_limiter import rate_limit_middleware
 
 # ---------------------------------------------------------------------------
 # App setup
@@ -66,6 +66,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add rate limiting
+app.middleware("http")(rate_limit_middleware)
 
 # ---------------------------------------------------------------------------
 # Request / Response schemas

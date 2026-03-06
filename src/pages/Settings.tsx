@@ -1,7 +1,8 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Lock, Bell, Download, LogOut, User, Wallet, FileText, Moon, Sun, TrendingUp, Calculator, Info, CheckCircle, Target, ArrowRight, Shield, PiggyBank, BookOpen } from 'lucide-react';
+import { Settings as SettingsIcon, Lock, Bell, Download, LogOut, User, Wallet, FileText, Moon, Sun, TrendingUp, Calculator, Info, CheckCircle, Target, ArrowRight, Shield, PiggyBank, BookOpen, Trash2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, Legend } from 'recharts';
+import { exportUserData, deleteUserData } from '../utils/dataExport';
 import { TaxSettings } from '../types';
 
 interface SettingsProps {
@@ -540,15 +541,31 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
                         </div>
                       </div>
                       <div className="flex gap-3">
-                        <button onClick={() => alert('CSV file downloaded successfully!')} className="px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-black dark:text-white font-black uppercase text-xs transition">CSV FORMAT</button>
-                        <button onClick={() => alert('PDF report downloaded successfully!')} className="px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-black dark:text-white font-black uppercase text-xs transition">PDF REPORT</button>
+                        <button onClick={() => exportUserData('saiyam')} className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-black font-black uppercase text-xs transition">EXPORT JSON</button>
+                        <button onClick={() => alert('CSV export coming soon!')} className="px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-black dark:text-white font-black uppercase text-xs transition">CSV FORMAT</button>
+                        <button onClick={() => alert('PDF report coming soon!')} className="px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-black dark:text-white font-black uppercase text-xs transition">PDF REPORT</button>
                       </div>
                     </div>
 
                     <div className="p-6 border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20">
-                      <h4 className="font-black uppercase text-red-600 dark:text-red-400 text-sm mb-2">DELETE ACCOUNT</h4>
-                      <p className="text-xs font-bold uppercase text-red-500 dark:text-red-300 mb-4">PERMANENTLY REMOVE YOUR ACCOUNT. THIS ACTION CANNOT BE UNDONE.</p>
-                      <button className="px-6 py-3 bg-red-500 hover:bg-red-600 text-black font-black uppercase transition">DELETE MY ACCOUNT</button>
+                      <div className="flex items-center gap-4 mb-4">
+                        <Trash2 className="text-red-600 dark:text-red-400" size={24} />
+                        <div>
+                          <h4 className="font-black uppercase text-red-600 dark:text-red-400 text-sm">DELETE ACCOUNT</h4>
+                          <p className="text-xs font-bold uppercase text-red-500 dark:text-red-300 mt-1">PERMANENTLY REMOVE YOUR ACCOUNT. THIS ACTION CANNOT BE UNDONE.</p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => {
+                          if (deleteUserData('saiyam')) {
+                            alert('All data deleted successfully!');
+                            if (onLogout) onLogout();
+                          }
+                        }}
+                        className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-black uppercase transition"
+                      >
+                        DELETE MY ACCOUNT
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -560,3 +577,5 @@ export const Settings: React.FC<SettingsProps> = ({ settings, setSettings, isDar
     </div>
   );
 };
+
+export default Settings;

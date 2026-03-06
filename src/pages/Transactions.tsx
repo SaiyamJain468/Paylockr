@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { ChevronDown, Search, Filter, Download, ArrowDownLeft, ArrowUpRight, Calendar as CalendarIcon, X, Plus, DollarSign, Ban, Upload, Scan } from 'lucide-react';
 import { CATEGORIES } from '../utils/multiUserUnifiedData';
@@ -19,7 +19,7 @@ interface TransactionsProps {
   onUpdate?: (t: Transaction) => void;
 }
 
-export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], onAdd, onBulkAdd, onUpdate }) => {
+const Transactions: React.FC<TransactionsProps> = ({ transactions = [], onAdd, onBulkAdd, onUpdate }) => {
   const [filterType, setFilterType] = useState<FilterType>('ALL');
   const [sortBy, setSortBy] = useState<SortBy>('DATE_NEW');
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('THIS_MONTH');
@@ -252,7 +252,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
       // Show ALL_TIME so every imported transaction is visible regardless of date
       setTimePeriod('ALL_TIME');
     } catch (err: any) {
-      console.error('[Import] Error:', err);
+      console.error('[Import] Error:', err?.message || String(err));
       setImportStatus({ msg: `❌ Import failed: ${err.message || 'Unknown error'}`, type: 'error' });
     } finally {
       setIsImporting(false);
@@ -694,3 +694,5 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions = [], o
     </div>
   );
 };
+
+export default Transactions;

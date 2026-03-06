@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState } from 'react';
 import { Lock, UserCheck, AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { authService } from '../../services/authService';

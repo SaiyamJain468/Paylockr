@@ -1,0 +1,21 @@
+{
+  "name": "PayLockr - AI Tax Management",
+  "short_name": "PayLockr",
+  "description": "AI-Powered Tax Management for Indian Freelancers",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#22d3ee",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity", "business"],
+  "lang": "en-IN",
+  "dir": "ltr"
+}

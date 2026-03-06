@@ -8,10 +8,18 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       host: '0.0.0.0',
+      https: mode === 'production' ? true : false, // HTTPS in production
     },
     plugins: [react()],
     build: {
-      sourcemap: false, // Disable sourcemaps for production
+      sourcemap: false,
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+      },
       rollupOptions: {
         output: {
           manualChunks: {

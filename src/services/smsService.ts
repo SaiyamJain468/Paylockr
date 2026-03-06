@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 // SMS Service - Calls backend API
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 

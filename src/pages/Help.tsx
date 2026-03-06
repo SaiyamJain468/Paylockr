@@ -1,7 +1,8 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState } from 'react';
 import { HelpCircle, Mail, MessageCircle, FileQuestion, ChevronDown, Search, BookOpen, Wallet, TrendingUp, Calendar, Shield, CreditCard, FileText, Video, ExternalLink, Key } from 'lucide-react';
 import { APIKeyChecker } from '../components/common/APIKeyChecker';
+import { APIStatusDashboard } from '../components/common/APIStatusDashboard';
 
 interface FAQItem {
   question: string;
@@ -206,7 +207,8 @@ export const Help: React.FC = () => {
 
       {/* API Key Checker */}
       {selectedCategory === 'API' && (
-        <div className="mb-8">
+        <div className="space-y-6">
+          <APIStatusDashboard />
           <APIKeyChecker />
         </div>
       )}
@@ -297,3 +299,5 @@ export const Help: React.FC = () => {
     </div>
   );
 };
+
+export default Help;

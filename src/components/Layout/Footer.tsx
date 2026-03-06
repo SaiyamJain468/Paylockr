@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React from 'react';
 
 export const Footer: React.FC = () => {

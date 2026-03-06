@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import { Transaction, Expense, Invoice, VaultEntry, BankAccount, VaultDocument, TransactionType, TransactionStatus } from '../types';
 
 // Fixed realistic transaction data

@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState } from 'react';
 import { Calendar, Calculator, TrendingUp, Info } from 'lucide-react';
 
@@ -211,3 +211,5 @@ export const TaxManagement: React.FC<TaxManagementProps> = ({ stats }) => {
     </div>
   );
 };
+
+export default TaxManagement;

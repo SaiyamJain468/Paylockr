@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState } from 'react';
 import { Plus, Download, Send, Trash2, Eye, FileText } from 'lucide-react';
 import { Invoice } from '../types';
@@ -365,3 +365,5 @@ export const Invoices: React.FC<InvoicesProps> = ({ invoices, onAdd, onDelete, o
     </div>
   );
 };
+
+export default Invoices;

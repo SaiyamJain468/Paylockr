@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { Transaction, TransactionType, TransactionStatus } from '../../types';

@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Transaction, Expense } from "../types";
 import { mockExtractTransactions } from './mockExtractor.js';
@@ -55,12 +55,12 @@ export const generateTaxInsights = async (transactions: Transaction[], annualInc
       return await callGroqAPI(prompt);
     } else {
       const genAI = getAiInstance();
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
       const result = await model.generateContent(prompt);
       return result.response.text() || "No insights could be generated.";
     }
   } catch (error: any) {
-    console.error("❌ Tax Insights Error:", error);
+    console.error("❌ Tax Insights Error:", error?.message || String(error));
     return `📊 Tax Analysis:\n\n✅ Your annual income of ₹${annualIncome.toLocaleString('en-IN')} puts you in a moderate tax bracket.\n\n💡 Recommendations:\n• Set aside 20-25% for taxes\n• Maximize Section 80C deductions (₹1.5L)\n• Consider health insurance under 80D\n• Pay advance tax quarterly to avoid penalties`;
   }
 };
@@ -91,12 +91,12 @@ export const analyzeExpenses = async (expenses: Expense[], totalIncome: number) 
       return await callGroqAPI(prompt);
     } else {
       const genAI = getAiInstance();
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
       const result = await model.generateContent(prompt);
       return result.response.text();
     }
   } catch (error: any) {
-    console.error("Expense Analysis Error:", error);
+    console.error("Expense Analysis Error:", error?.message || String(error));
     const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0);
     return `📈 Expense Analysis:\n\n💰 Total Expenses: ₹${totalExpense.toLocaleString('en-IN')}\n\n🎯 Optimization Tips:\n• Review recurring subscriptions\n• Track business vs personal expenses\n• Claim eligible business deductions\n• Maintain proper receipts for tax filing`;
   }
@@ -118,12 +118,12 @@ export const getTaxSavingTips = async (income: number, currentTaxSlab: number) =
       return await callGroqAPI(prompt);
     } else {
       const genAI = getAiInstance();
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
       const result = await model.generateContent(prompt);
       return result.response.text();
     }
   } catch (error: any) {
-    console.error("Tax Tips Error:", error);
+    console.error("Tax Tips Error:", error?.message || String(error));
     return `💡 Tax-Saving Strategies:\n\n1️⃣ Section 80C (₹1.5L limit):\n   • PPF, ELSS, Life Insurance\n   • Estimated savings: ₹46,800\n\n2️⃣ Section 80D (₹25K-50K):\n   • Health insurance premiums\n   • Estimated savings: ₹7,800\n\n3️⃣ Business Expenses:\n   • Internet, phone, software\n   • Home office deduction`;
   }
 };
@@ -152,12 +152,12 @@ export const calculateFinancialHealth = async (data: {
       return await callGroqAPI(prompt);
     } else {
       const genAI = getAiInstance();
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
       const result = await model.generateContent(prompt);
       return result.response.text();
     }
   } catch (error: any) {
-    console.error("Health Check Error:", error);
+    console.error("Health Check Error:", error?.message || String(error));
     const savingsRate = ((data.income - data.expenses) / data.income * 100).toFixed(0);
     const vaultCoverage = ((data.vaultBalance / data.taxLiability) * 100).toFixed(0);
     const score = Math.min(100, Math.round((parseFloat(savingsRate) + parseFloat(vaultCoverage)) / 2));
@@ -297,7 +297,7 @@ const extractFromImageDirect = async (file: File): Promise<ParsedStatement> => {
   if (geminiKey) {
     try {
       const genAI = getAiInstance();
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       // Convert file to base64
       const base64 = await fileToBase64(file);
@@ -352,7 +352,7 @@ const extractFromImageDirect = async (file: File): Promise<ParsedStatement> => {
         source: 'gemini-vision',
       };
     } catch (error) {
-      console.error('[GeminiVision] Gemini failed:', error);
+      console.error('[GeminiVision] Gemini failed:', error instanceof Error ? error.message : String(error));
       throw error; // Let parent function handle fallback
     }
   }
@@ -363,7 +363,7 @@ const extractFromImageDirect = async (file: File): Promise<ParsedStatement> => {
       console.log(`[GroqFallback] Using Groq API for ${file.name}`);
       throw new Error('Groq API fallback requires OCR preprocessing');
     } catch (error) {
-      console.error('[GroqFallback] Groq fallback failed:', error);
+      console.error('[GroqFallback] Groq fallback failed:', error instanceof Error ? error.message : String(error));
       throw error;
     }
   }

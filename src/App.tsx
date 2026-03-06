@@ -1,5 +1,5 @@
-// made by ZION
-import React, { useState, useEffect } from 'react';
+// Made by Saiyam Jain - https://github.com/saiyamjain468
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { ViewState, Transaction, Notification, TaxSettings, TaxDeadline, Invoice, Expense, VaultEntry, BankAccount, VaultDocument, TaxCalendarEntry, AIInsight, ClassifiedIncome } from './types';
 import { MOCK_TAX_DEADLINES, generateNotifications } from './constants';
 import { getUserData, getDashboardStats, saveTransactions } from './utils/multiUserUnifiedData';
@@ -17,21 +17,22 @@ import { SignUp } from './components/Auth/SignUp';
 // UI Components
 import { Button } from './components/common/Button';
 import { ThemeToggle } from './components/common/ThemeToggle';
+import CookieConsent from './components/common/CookieConsent';
 
-// Pages
-import { Dashboard } from './pages/Dashboard';
-import { Transactions } from './pages/Transactions';
-import { Vault } from './pages/Vault';
-import { Insights } from './pages/Insights';
-import { Notifications } from './pages/Notifications';
-import { Settings } from './pages/Settings';
-import { Invoices } from './pages/Invoices';
-import { Expenses } from './pages/Expenses';
-import { BankAccounts } from './pages/BankAccounts';
-import { TaxManagement } from './pages/TaxManagement';
-import { Help } from './pages/Help';
-import { SmartTaxVault } from './pages/SmartTaxVault';
-import { TaxCalendar } from './pages/TaxCalendar';
+// Pages - Lazy loaded for code splitting
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Transactions = lazy(() => import('./pages/Transactions'));
+const Vault = lazy(() => import('./pages/Vault'));
+const Insights = lazy(() => import('./pages/Insights'));
+const Notifications = lazy(() => import('./pages/Notifications'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Invoices = lazy(() => import('./pages/Invoices'));
+const Expenses = lazy(() => import('./pages/Expenses'));
+const BankAccounts = lazy(() => import('./pages/BankAccounts'));
+const TaxManagement = lazy(() => import('./pages/TaxManagement'));
+const Help = lazy(() => import('./pages/Help'));
+const SmartTaxVault = lazy(() => import('./pages/SmartTaxVault'));
+const TaxCalendar = lazy(() => import('./pages/TaxCalendar'));
 import { supabase } from './services/supabaseClient';
 
 const Toast = ({ message, type, onClose }: { message: string, type: 'success' | 'error' | 'info', onClose: () => void }) => {
@@ -123,7 +124,7 @@ export default function App() {
 
         setNotifications(generateNotifications(userData.transactions));
       } catch (e) {
-        console.error("Failed to load user data", e);
+        console.error("Failed to load user data:", String(e));
       }
     };
 
@@ -148,7 +149,7 @@ export default function App() {
           if (view === 'LOGIN') setView('DASHBOARD');
         }
       } catch (err) {
-        console.error("Auth check error:", err);
+        console.error("Auth check error:", String(err));
       }
     };
 
@@ -204,9 +205,9 @@ export default function App() {
         setNotifications(generateNotifications(userData.transactions));
 
         setView('DASHBOARD');
-        setToast({ msg: `Welcome back, ${user.name}!`, type: 'success' });
+        setToast({ msg: `Welcome back, ${user.name || user.email?.split('@')[0] || 'User'}!`, type: 'success' });
       } catch (err) {
-        console.error("Failed to parse user data:", err);
+        console.error("Failed to parse user data");
         sessionStorage.removeItem('userData');
         setToast({ msg: 'Session expired. Please login again.', type: 'error' });
         setView('LOGIN');
@@ -307,6 +308,7 @@ export default function App() {
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-neutral-950' : 'bg-gray-100'}`}>
       {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+      <CookieConsent />
       <ThemeToggle isDark={isDarkMode} onToggle={() => setIsDarkMode(!isDarkMode)} />
       <Sidebar view={view} setView={setView} handleLogout={handleLogout} />
 
@@ -323,6 +325,11 @@ export default function App() {
         )}
 
         <div className={view === 'DASHBOARD' ? '' : 'px-4 md:px-8 pb-8'}>
+          <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
+            </div>
+          }>
           {view === 'DASHBOARD' && (
             <Dashboard
               transactions={transactions}
@@ -406,6 +413,7 @@ export default function App() {
           {view === 'TAX_CALENDAR' && <TaxCalendar userId={userId} />}
           {view === 'TAX_MANAGEMENT' && <TaxManagement stats={stats} />}
           {view === 'HELP' && <Help />}
+          </Suspense>
         </div>
 
         {view !== 'DASHBOARD' && (

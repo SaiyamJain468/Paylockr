@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 // Core Data Service - Manages all interconnected data relationships
 import { 
   Transaction, Expense, Invoice, VaultEntry, BankAccount, 

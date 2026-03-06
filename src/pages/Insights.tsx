@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState } from 'react';
 import { Transaction, Expense } from '../types';
 import { generateTaxInsights, analyzeExpenses, getTaxSavingTips, calculateFinancialHealth } from '../services/geminiService';

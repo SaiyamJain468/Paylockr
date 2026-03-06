@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState } from 'react';
 import { Bell, Moon, Sun, Download, Trash2, Mail, MessageSquare } from 'lucide-react';
 import { AppSettings } from '../../types';

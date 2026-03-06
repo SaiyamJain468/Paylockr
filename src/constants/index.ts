@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import { Transaction, TransactionType, TransactionStatus, Notification, ChartDataPoint, TaxDeadline, Expense, Invoice, BankAccount } from '../types';
 
 export const INITIAL_TRANSACTIONS: Transaction[] = [

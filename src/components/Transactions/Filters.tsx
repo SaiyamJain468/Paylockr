@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useState } from 'react';
 import { Search, Plus } from 'lucide-react';
 import { TransactionType } from '../../types';

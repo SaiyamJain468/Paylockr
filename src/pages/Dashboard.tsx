@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React, { useRef, useEffect } from 'react';
 import { 
   Bell, 
@@ -39,7 +39,7 @@ interface DashboardProps {
   stats: any; // Received from App.tsx
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ 
+const Dashboard: React.FC<DashboardProps> = ({ 
   transactions: propTransactions,
   setCurrentView, 
   isDarkMode,
@@ -78,7 +78,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       if (result.success) {
         alert(`✅ Report sent to ${email}!`);
       } else {
-        console.error('Email error:', result.error);
+        console.error('Email error:', result.error || 'Unknown error');
         alert(`❌ Failed: ${result.error || 'Check EmailJS template settings'}`);
       }
     } catch (error) {
@@ -152,7 +152,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="flex items-center justify-between gap-2 pl-16 md:pl-0">
             <div className="flex-1 min-w-0">
               <h1 className={`text-xl sm:text-2xl md:text-4xl font-black uppercase ${isDarkMode ? 'text-white' : 'text-black'} truncate`}>
-                {currentUser ? `${currentUser.name ? currentUser.name.split(' ')[0] : 'FREELANCER'}` : 'DASHBOARD'}
+                {currentUser?.name?.split(' ')[0] || currentUser?.email?.split('@')[0] || 'FREELANCER'}
               </h1>
               <div className="flex items-center gap-2 mt-2">
                 <span className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>
@@ -536,3 +536,5 @@ export const Dashboard: React.FC<DashboardProps> = ({
     </>
   );
 };
+
+export default Dashboard;

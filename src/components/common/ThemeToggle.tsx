@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import { Sun, Moon } from 'lucide-react';
 
 interface ThemeToggleProps {

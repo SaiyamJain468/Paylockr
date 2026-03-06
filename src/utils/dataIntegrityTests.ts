@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 // Data Integrity Test Suite
 // Run this in browser console to verify all relationships
 

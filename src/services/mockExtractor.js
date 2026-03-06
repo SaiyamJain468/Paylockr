@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 // Mock bank statement extraction - works without API keys
 export const mockExtractTransactions = (file) => {
   console.log(`[MockExtractor] Processing ${file.name}`);

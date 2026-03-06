@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React from 'react';
 import { Lock, FileText, Receipt, Sparkles, ChevronRight, Plus, ArrowRight } from 'lucide-react';
 import { ViewState } from '../../types';

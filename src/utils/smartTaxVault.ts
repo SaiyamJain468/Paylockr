@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import { Transaction, TransactionType, VaultEntry } from '../types';
 
 export const formatCurrency = (amount: number) => {

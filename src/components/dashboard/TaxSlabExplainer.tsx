@@ -1,4 +1,4 @@
-// made by ZION
+// Made by Saiyam Jain - https://github.com/saiyamjain468
 import React from 'react';
 import { Info } from 'lucide-react';
 import { NEW_TAX_REGIME_2026 } from '../../utils/taxCalculator';
